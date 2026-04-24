@@ -225,6 +225,13 @@
             overflow: hidden; position: relative; cursor: pointer; 
             transition: transform 0.4s ease, box-shadow 0.4s ease; /* 鼠标放上去时的动态效果过度时间 */
         }
+		
+		/* 【新增】：禁止浏览器原生拖拽图片（防止出现半透明幽灵图打断滑动） */
+		.carousel-item img {
+		    -webkit-user-drag: none; 
+		    user-drag: none; 
+		}
+		
         /* 鼠标悬停在图片上时：图片会向上浮动 8px 并出现阴影 */
         .carousel-item:hover { 
             transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); 
@@ -402,8 +409,8 @@
         <div class="nav-right desktop-nav"> 
             <div class="nav-item has-dropdown"> <span>Language</span>
                 <div class="dropdown-menu">
-                    <a href="#">中文</a>
-                    <a href="index_us.html">English</a>
+                    <a href="index_us.html">中文</a>
+                    <a href="#">English</a>
                 </div>
             </div>
         </div>
@@ -416,7 +423,7 @@
 		<a href="#" class="nav-item">其他内容制作中</a>
 <!--        <a href="#" class="nav-item">论坛</a>
         <div class="nav-item has-dropdown">
-            <span>商城</span>
+            <span>商城 ▼</span>
             <div class="dropdown-menu"><a href="#">商城 1</a><a href="#">商城 2</a></div>
         </div>
         <a href="#" class="nav-item">活动中心</a> -->
