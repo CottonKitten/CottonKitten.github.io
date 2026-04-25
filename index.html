@@ -729,8 +729,9 @@
 			    };
 			
 			    track.addEventListener('scroll', updateArrowsVisibility); 
-			    setTimeout(updateArrowsVisibility, 100); 
-			    window.addEventListener('resize', updateArrowsVisibility); 
+				updateArrowsVisibility(); // 刚打开时先按当前状态计算一次
+				window.addEventListener('load', updateArrowsVisibility); // ❗核心修复：耐心等待网页上所有图片完全加载完毕后，再精准计算一次
+				window.addEventListener('resize', updateArrowsVisibility); 
 			});
         });
 
