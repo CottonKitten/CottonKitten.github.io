@@ -19,7 +19,16 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; /* 网页使用的字体 */
             padding-top: 65px;  /* ❗重要：为了不让顶部导航栏挡住内容，这里留出了65像素的顶部空间。如果你改了导航栏高度，这里也要跟着改 */
             background-color: #f8f9fa; /* 网页整体的灰白色背景底色 */
+			-webkit-user-select: none; /* 针对 Safari/Chrome 等 Webkit 内核 */
+            -moz-user-select: none;    /* 针对 Firefox */
+            -ms-user-select: none;     /* 针对 IE10+/Edge */
+            user-select: none;         /* 标准语法：禁止文字被鼠标选中或高亮 */
         }
+		
+		img {
+		    -webkit-user-drag: none;   /* 禁止所有图片被鼠标长按拖拽 */
+        }
+		
         a { text-decoration: none; color: inherit; } /* 去掉所有超链接下面的下划线 */
         ul { list-style: none; } 
 
@@ -264,7 +273,7 @@
 
         /* 左右滑动按钮的样式 */
 		.arrow { 
-		    position: absolute; top: 50%; width: 40px; height: 40px; /* 按钮的宽高 */
+		    position: absolute; top: 50%; width: 36px; height: 36px; /* 按钮的宽高 */
 		    border-radius: 50%; /* 变成圆形 */
 		    background-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); 
 		    border: none; cursor: pointer; display: flex; justify-content: center; 
@@ -602,6 +611,11 @@
 
     <script> 
         window.isDraggingGallery = false; // 记录当前是否正在拖拽图片
+		
+		// === 新增：全局拦截网页选中事件 ===
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault(); // 彻底阻止鼠标拖拽选中文本和 Ctrl+A 全选行为
+        });
 
 // === 社交按钮“点击锁定”逻辑 ===
         const socialBtn = document.getElementById('socialBtn');
@@ -689,7 +703,7 @@
                 if (!isDown) return; 
                 e.preventDefault(); 
                 const x = e.pageX - track.offsetLeft; 
-                const walk = (x - startX) * 1.5; // 1.5 是滑动灵敏度
+                const walk = (x - startX) * 1; // 1 是滑动灵敏度
                 
                 // 如果滑动距离超过5像素，就判定为拖拽，禁止触发弹窗大图
                 if (Math.abs(walk) > 5) { window.isDraggingGallery = true; }
@@ -729,9 +743,9 @@
 			    };
 			
 			    track.addEventListener('scroll', updateArrowsVisibility); 
-				updateArrowsVisibility(); // 刚打开时先按当前状态计算一次
-				window.addEventListener('load', updateArrowsVisibility); // ❗核心修复：耐心等待网页上所有图片完全加载完毕后，再精准计算一次
-				window.addEventListener('resize', updateArrowsVisibility); 
+			    updateArrowsVisibility(); // 刚打开时先按当前状态计算一次
+			    window.addEventListener('load', updateArrowsVisibility); // ❗核心修复：耐心等待网页上所有图片完全加载完毕后，再精准计算一次
+			    window.addEventListener('resize', updateArrowsVisibility); 
 			});
         });
 
