@@ -1,410 +1,949 @@
-<!DOCTYPE html> 
-<html lang="zh-CN"> 
-<head> 
-    <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-	<link rel="icon" type="image/x-icon" href="image/index/head.ico">
-    <title>棉花小猫</title> <style>
-        /* ====================================================
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="icon" type="image/x-icon" href="image/index/head.ico">
+		<title>棉花小猫</title>
+		<style>
+			/* ====================================================
            样式表 (CSS) 区：这里控制着网页所有的“长相”（颜色、大小、位置）
            💡 小白提示：
            - `px` 代表像素，数字越大，东西就越大/越宽/越高。
            - `#` 开头的是颜色代码，比如 #fff 是纯白，#333 是深灰，想换颜色可以在网上搜索“HEX颜色代码”。
            ====================================================
         */
+			/* ================= 专门用来放行的文字类 ================= */
+			.allow-select {
+				-webkit-user-select: text !important;
+				/* !important 代表最高优先级，强制生效 */
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				user-select: text !important;
+				cursor: text;
+				/* 鼠标放上去变回原本打字的那个 "I" 字形光标 */
+			}
 
-        /* ================= 基础设置 ================= */
-        * { margin: 0; padding: 0; box-sizing: border-box; } /* 清除浏览器默认的内外边距，让排版更受控 */
-        body {  
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; /* 网页使用的字体 */
-            padding-top: 65px;  /* ❗重要：为了不让顶部导航栏挡住内容，这里留出了65像素的顶部空间。如果你改了导航栏高度，这里也要跟着改 */
-            background-color: #f8f9fa; /* 网页整体的灰白色背景底色 */
-			-webkit-user-select: none; /* 针对 Safari/Chrome 等 Webkit 内核 */
-            -moz-user-select: none;    /* 针对 Firefox */
-            -ms-user-select: none;     /* 针对 IE10+/Edge */
-            user-select: none;         /* 标准语法：禁止文字被鼠标选中或高亮 */
-        }
-		
-		img {
-		    -webkit-user-drag: none;   /* 禁止所有图片被鼠标长按拖拽 */
-		}
-		
-        a { text-decoration: none; color: inherit; } /* 去掉所有超链接下面的下划线 */
-        ul { list-style: none; } 
-
-        /* ================= 顶部导航栏 (Header) ================= */
-        .header { 
-            position: fixed; top: 0; left: 0; width: 100%; /* 固定在网页最顶部，不随页面滚动 */
-            height: 65px; /* 导航栏的高度 */
-            background-color: #fff; /* 导航栏的背景颜色：纯白 */
-            box-shadow: 0 4px 12px 2px rgba(0,0,0,0.35); /* 导航栏底部淡淡的阴影，增加立体感 */
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 50px; /* 导航栏左右两侧的留白距离 */
-            z-index: 1000; /* 保证导航栏永远盖在其他内容上面 */
-        }
-
-        .logo { display: flex; align-items: center; height: 100%; }
-        .logo img { height: 60px; width: auto; display: block; object-fit: contain; } /* 左上角 Logo 图片的高度 */
-        
-        .nav-center { display: flex; gap: 40px; align-items: center; } /* 导航栏文字之间的间距（40px） */
-        
-        .nav-item { 
-            position: relative; font-weight: 500; cursor: pointer; 
-            color: #333; /* 导航栏未选中文字的颜色：深灰 */
-            transition: color 0.3s ease; /* 鼠标放上去颜色渐变的时间 */
-        }
-        /* 鼠标悬停时，或者当前正在浏览的页面的文字颜色（这里设成了橙红色） */
-        .nav-item.active, .nav-item:hover { color: #ff5722; } 
-
-        .nav-right { display: flex; align-items: center; } 
-
-        /* 下拉菜单的样式 */
-        .dropdown-menu { 
-            display: none; position: absolute; top: 100%; left: 50%; 
-            transform: translateX(-50%); margin-top: 15px; 
-            background: #fff; /* 下拉菜单的白色背景 */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25); border-radius: 8px; /* 阴影和圆角 */
-            min-width: 120px; overflow: hidden; z-index: 1001; 
-        }
-        .dropdown-menu a { display: block; padding: 12px 20px; text-align: center; transition: background 0.2s, color 0.2s; color: #333;} 
-        /* 鼠标悬浮在下拉菜单选项上时的背景和文字颜色变化 */
-        .dropdown-menu a:hover { background-color: #f1f1f1; color: #ff5722; } 
-        .has-dropdown.open .dropdown-menu { display: block; } 
-
-        /* 手机端的“三条杠”菜单按钮图标，电脑端默认隐藏 */
-        .menu-btn { display: none; cursor: pointer; flex-direction: column; gap: 6px; } 
-        .menu-btn span { width: 26px; height: 3px; background-color: #333; border-radius: 2px; } 
-
-        /* ================= 媒体页主视觉横幅 (Banner) ================= */
-        .hero-banner { 
-            width: 100%; 
-            height: 265px; /* 电脑端顶部大横幅的高度，想做窄一点可以改小数字 */
-            background: #628cf5; /* 横幅的背景颜色，目前是蓝色 */
-            display: flex; justify-content: center; align-items: center; 
-            padding-bottom: 0; overflow: hidden; 
-        }
-        .hero-images { display: flex; height: 100%; }
-        .mock-img { display: flex; justify-content: center; align-items: center; }
-
-        /* 横幅中间那张图片（一般是标题或核心图）的大小 */
-        .img-center { width: 500px; height: 100px; align-self: center; }
-        /* 横幅两侧装饰图片的大小 */
-        .img-side { width: 220px; height: 250px; align-self: flex-end; }
-
-        .sidebar { display: none; } /* 手机侧边栏默认在电脑端不显示 */
-
-/* ================= 社交按钮与浮框样式 ================= */
-        .social-btn-container {
-            position: relative; 
-            margin-left: 20px; /* 控制图标距离左边标题的距离 */
-            cursor: pointer;
-        }
-
-        /* 1. 图标区：控制两张图片的悬停切换 */
-        .social-icon {
-            width: 60px; height: 60px; /* 外面小图标的大小 */
-            position: relative;
-        }
-        .social-icon img {
-            width: 100%; height: 100%; object-fit: contain;
-            position: absolute; top: 0; left: 0;
-            transition: opacity 0.3s ease; /* 切换时的淡入淡出动画 */
-        }
-        .social-icon .img-hover { opacity: 0; } /* 默认隐藏悬停状态的图 */
-        
-        /* 鼠标悬浮时，正常图消失，悬停图出现 */
-        .social-btn-container:hover .img-normal { opacity: 0; }
-        .social-btn-container:hover .img-hover { opacity: 1; }
-
-        /* 2. 悬浮框的样式 */
-        .float-box {
-            position: absolute; 
-            top: 100%; left: 50%; 
-            transform: translateX(-50%); /* 让悬浮框水平居中对齐上面的小图标 */
-            margin-top: 15px; /* 距离上面图标的空隙 */
-            background: #fff; 
-            padding: 15px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15); /* 漂亮的立体阴影 */
-            text-align: center;
-            z-index: 1000;
-            
-            /* 重点：默认状态是透明且隐藏的 */
-            opacity: 0; 
-            visibility: hidden; 
-            transition: all 0.3s ease;
-        }
-        
-        /* 悬浮框里的图片（比如二维码）和文字 */
-        .float-box img {
-            width: 120px; height: 120px; /* 这里控制弹出框里图片的大小 */
-            display: block;
-            margin-bottom: 10px;
-        }
-        .float-box p {
-            color: #333; font-size: 14px; font-weight: bold;
-            margin: 0; white-space: nowrap; /* 强制文字不换行 */
-        }
-
-        /* 3. 核心显示逻辑：当鼠标悬停，或者被 JS 打上 'pinned' (锁定) 标记时，显示浮框 */
-        .social-btn-container:hover .float-box,
-        .social-btn-container.pinned .float-box {
-            opacity: 1; 
-            visibility: visible; 
-        }
-
-        /* ================= 系列图片展示功能 (图集区) ================= */
-        .gallery-container { 
-            width: 85%; /* 图集区占据屏幕宽度的百分比，想更宽就改成 90% 或 95% */
-            max-width: 1200px; /* 图集最宽不能超过1200像素（防止在大屏幕显示器上被拉得太难看） */
-            margin: 60px auto; /* 上下留白 60px，左右自动居中 */
-            display: flex; flex-direction: column; 
-            gap: 60px; /* 上下两个不同主题图集之间的间距 */
-            padding-bottom: 60px; 
-        }
-
-        /* 每一个图集（比如“派对影像”、“猛兽抓拍”）的白色背景框 */
-        .series-box { 
-            background: #fff; border-radius: 30px; /* 20px 是白框的圆角程度 */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; 
-        }
-
-        /* 图集顶部的彩色标题栏 */
-        .box-header { 
-            height: 80px; border-radius: 30px 30px 0 0; display: flex; align-items: center; 
-            position: relative; 
-            /* 标题栏自带的半透明斜线条纹背景 */
-            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 10px, transparent 10px, transparent 20px); 
-        }
-        /* 根据HTML里设置的类名，决定标题栏的底色 */
-        .theme-yellow .box-header { background-color: #ffd633; } /* 黄色主题 */
-        .theme-grey .box-header { background-color: #b0b3b8; } /* 灰色主题 */
-
-        /* 标题文字的样式 */
-        .box-title { 
-            color: #fff; font-size: 40px; /* 文字大小 */
-            font-weight: 900; /* 文字粗细 */
-            margin-left: 30px; /* 距离左边的距离 */
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-        }
-        
-        /* 标题栏右侧的吉祥物装饰块 */
-        .mascot-img { 
-            position: absolute;
-			right: 40px;
-			bottom: -19px;
-			height: 140px;
-			width: 180px; 
-            z-index: 10;
-			/* background: #f2f; text-align: center; line-height: 100px; */ 
-            /* box-shadow: 0 -5px 10px rgba(0,0,0,0.10); */
-        }
-		
-		/* 2. 新增：控制图片的显示方式 */
-		.mascot-img img {
-		    width: 100%;       /* 图片宽度撑满 120px */
-		    height: 100%;      /* 图片高度撑满 130px */
-		    object-fit: contain; /* ❗核心：保证图片按比例缩放，不会被拉伸变形 */
-		    display: block;
-		}
-
-        .carousel-wrapper { position: relative; padding: 0px 15px; } /* 上下15px,左右20px留白 */
-
-        /* 存放所有图片的滑动轨道 */
-        .carousel-track { 
-            display: flex; gap: 20px; /* 每一张图片之间的距离是 20px */
-            overflow-x: auto; scroll-behavior: smooth; 
-            scrollbar-width: none; -ms-overflow-style: none; 
-			padding-top: 25px; padding-bottom: 25px; 
-			padding-left: 20px; pading-right:20px;
-            user-select: none; 
-        }
-        .carousel-track::-webkit-scrollbar { display: none; } /* 隐藏丑陋的底部滚动条 */
-        
-        /* 鼠标拖拽图片时的手型光标 */
-        .carousel-track.dragging { scroll-behavior: auto; cursor: grab; }
-        .carousel-track.dragging:active { cursor: grabbing; }
-
-        /* ⭐️重要：每一张图片的单独尺寸设置 */
-        .carousel-item { 
-            flex: 0 0 auto; 
-            width: auto; 
-            height: 220px; /* ❗想要图片变大或变小，改这里的高度，宽度会自动跟着按比例变 */
-            border-radius: 16px; /* 图片的圆角 */
-            overflow: hidden; position: relative; cursor: pointer; 
-            transition: transform 0.4s ease, box-shadow 0.4s ease; /* 鼠标放上去时的动态效果过度时间 */
-        }
-		
-		/* 【新增】：禁止浏览器原生拖拽图片（防止出现半透明幽灵图打断滑动） */
-		.carousel-item img {
-		    -webkit-user-drag: none; 
-		    user-drag: none; 
-		}
-		
-        /* 鼠标悬停在图片上时：图片会向上浮动 8px 并出现阴影 */
-        .carousel-item:hover { 
-            transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); 
-        }
-		/* 专门强制给最后一张卡片的右边增加 20px 的距离，用来展示阴影 */
-		 .carousel-item:last-child {
-	        margin-right: 20px;
-	    }
-
-        /* 如果没有真实图片，这就是那些带有渐变色的测试图块样式 */
-        .carousel-item div.img-mock-gallery { 
-            height: 100%; aspect-ratio: 4 / 3; /* 比例锁定为 4:3 */
-            display: flex; justify-content: center; align-items: center; 
-            color: #fff; font-size: 24px; font-weight: bold; pointer-events: none;  
-        }
-
-        /* 动图特效的相关设置 */
-		.gif-container { width: auto; height: 100%; position: relative; }
-		.gif-container .static-img {
-			position: relative; height: 100%; width: auto; 
-			object-fit: cover; display: block; transition: opacity 0.4s ease;
-		}
-        .gif-container .gif-img {
-            position: absolute; top: 0; left: 0; height: 100%; width: 100%;
-			object-fit: cover; opacity: 0; transition: opacity 0.4s ease; 
-        }
-        /* 鼠标悬浮时：隐藏静态图，显示动图 */
-		.carousel-item:hover .gif-container .gif-img { opacity: 1; }
-		.carousel-item:hover .gif-container .static-img { opacity: 0; }
-
-        /* 左右滑动按钮的样式 */
-		.arrow { 
-		    position: absolute; top: 50%; width: 36px; height: 36px; /* 按钮的宽高 */
-		    border-radius: 50%; /* 变成圆形 */
-		    background-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); 
-		    border: none; cursor: pointer; display: flex; justify-content: center; 
-		    align-items: center; font-size: 18px; color: #666; 
-		    z-index: 10; transition: all 0.2s; 
-		}
-		.arrow:hover { background-color: #ffd633; color: #fff; } /* 鼠标放在箭头上的颜色 */
-		
-		.arrow-prev { left: 0; transform: translate(-50%, -50%); } 
-		.arrow-prev:hover { transform: translate(-50%, -50%) scale(1.1); } /* 悬停时稍微变大1.1倍 */
-		.arrow-next { right: 0; transform: translate(50%, -50%); } 
-		.arrow-next:hover { transform: translate(50%, -50%) scale(1.1); }
-
-        /* ================= 点击图片放大后的黑底弹窗界面 ================= */
-        .lightbox {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.85); /* 0.85 代表黑色的透明度，1是全黑不可见背景 */
-            z-index: 9999; display: flex; justify-content: center; align-items: center; 
-            opacity: 0; pointer-events: none; transition: opacity 0.3s; 
-        }
-        .lightbox.active { opacity: 1; pointer-events: auto; } 
-        .lightbox-content { 
-            width: 80%; max-width: 900px; height: 70%; border-radius: 12px; 
-            display: flex; justify-content: center; align-items: center; 
-            color: #fff; font-size: 24px; background: transparent; box-shadow: none; 
-        }
-        /* 右上角的关闭大叉号 */
-        .lightbox-close { position: absolute; top: 30px; right: 40px; font-size: 40px; color: #fff; cursor: pointer; } 
+			/* 顺便美化一下超链接，让它看起来像截图里一样 */
+			.email-link {
+				color: #fff;
+				/* 文字颜色 */
+				text-decoration: underline;
+				/* 加上下划线 */
+				cursor: pointer;
+				/* 鼠标放上去变成小手 */
+			}
 
 
-        /* ====================================================
+			/* ================= 基础设置 ================= */
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			/* 清除浏览器默认的内外边距，让排版更受控 */
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+				/* 网页使用的字体 */
+				padding-top: 65px;
+				/* ❗重要：为了不让顶部导航栏挡住内容，这里留出了65像素的顶部空间。如果你改了导航栏高度，这里也要跟着改 */
+				background-color: #f8f9fa;
+				/* 网页整体的灰白色背景底色 */
+				-webkit-user-select: none;
+				/* 针对 Safari/Chrome 等 Webkit 内核 */
+				-moz-user-select: none;
+				/* 针对 Firefox */
+				-ms-user-select: none;
+				/* 针对 IE10+/Edge */
+				user-select: none;
+				/* 标准语法：禁止文字被鼠标选中或高亮 */
+			}
+
+			img {
+				-webkit-user-drag: none;
+				/* 禁止所有图片被鼠标长按拖拽 */
+			}
+
+			a {
+				text-decoration: none;
+				color: inherit;
+			}
+
+			/* 去掉所有超链接下面的下划线 */
+			ul {
+				list-style: none;
+			}
+
+			/* ================= 顶部导航栏 (Header) ================= */
+			.header {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				/* 固定在网页最顶部，不随页面滚动 */
+				height: 65px;
+				/* 导航栏的高度 */
+				background-color: #fff;
+				/* 导航栏的背景颜色：纯白 */
+				box-shadow: 0 4px 12px 2px rgba(0, 0, 0, 0.35);
+				/* 导航栏底部淡淡的阴影，增加立体感 */
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0 50px;
+				/* 导航栏左右两侧的留白距离 */
+				z-index: 1000;
+				/* 保证导航栏永远盖在其他内容上面 */
+			}
+
+			.logo {
+				display: flex;
+				align-items: center;
+				height: 100%;
+			}
+
+			.logo img {
+				height: 60px;
+				width: auto;
+				display: block;
+				object-fit: contain;
+			}
+
+			/* 左上角 Logo 图片的高度 */
+
+			.nav-center {
+				display: flex;
+				gap: 40px;
+				align-items: center;
+			}
+
+			/* 导航栏文字之间的间距（40px） */
+
+			.nav-item {
+				position: relative;
+				font-weight: 500;
+				cursor: pointer;
+				color: #333;
+				/* 导航栏未选中文字的颜色：深灰 */
+				transition: color 0.3s ease;
+				/* 鼠标放上去颜色渐变的时间 */
+			}
+
+			/* 鼠标悬停时，或者当前正在浏览的页面的文字颜色（这里设成了橙红色） */
+			.nav-item.active,
+			.nav-item:hover {
+				color: #ff5722;
+			}
+
+			.nav-right {
+				display: flex;
+				align-items: center;
+			}
+
+			/* 下拉菜单的样式 */
+			.dropdown-menu {
+				display: none;
+				position: absolute;
+				top: 100%;
+				left: 50%;
+				transform: translateX(-50%);
+				margin-top: 15px;
+				background: #fff;
+				/* 下拉菜单的白色背景 */
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+				border-radius: 8px;
+				/* 阴影和圆角 */
+				min-width: 120px;
+				overflow: hidden;
+				z-index: 1001;
+			}
+
+			.dropdown-menu a {
+				display: block;
+				padding: 12px 20px;
+				text-align: center;
+				transition: background 0.2s, color 0.2s;
+				color: #333;
+			}
+
+			/* 鼠标悬浮在下拉菜单选项上时的背景和文字颜色变化 */
+			.dropdown-menu a:hover {
+				background-color: #f1f1f1;
+				color: #ff5722;
+			}
+
+			.has-dropdown.open .dropdown-menu {
+				display: block;
+			}
+
+			/* 手机端的“三条杠”菜单按钮图标，电脑端默认隐藏 */
+			.menu-btn {
+				display: none;
+				cursor: pointer;
+				flex-direction: column;
+				gap: 6px;
+			}
+
+			.menu-btn span {
+				width: 26px;
+				height: 3px;
+				background-color: #333;
+				border-radius: 2px;
+			}
+
+			/* ================= 媒体页主视觉横幅 (Banner) ================= */
+			.hero-banner {
+				width: 100%;
+				height: 265px;
+				/* 电脑端顶部大横幅的高度，想做窄一点可以改小数字 */
+				background: #628cf5;
+				/* 横幅的背景颜色，目前是蓝色 */
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				padding-bottom: 0;
+				overflow: hidden;
+			}
+
+			.hero-images {
+				display: flex;
+				height: 100%;
+			}
+
+			.mock-img {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			/* 横幅中间那张图片（一般是标题或核心图）的大小 */
+			.img-center {
+				width: 500px;
+				height: 100px;
+				align-self: center;
+			}
+
+			/* 横幅两侧装饰图片的大小 */
+			.img-side {
+				width: 220px;
+				height: 250px;
+				align-self: flex-end;
+			}
+
+			.sidebar {
+				display: none;
+			}
+
+			/* 手机侧边栏默认在电脑端不显示 */
+
+			/* ================= 社交按钮与浮框样式 ================= */
+			.social-btn-container {
+				position: relative;
+				margin-left: 20px;
+				/* 控制图标距离左边标题的距离 */
+				cursor: pointer;
+			}
+
+			/* 1. 图标区：控制两张图片的悬停切换 */
+			.social-icon {
+				width: 60px;
+				height: 60px;
+				/* 外面小图标的大小 */
+				position: relative;
+			}
+
+			.social-icon img {
+				width: 100%;
+				height: 100%;
+				object-fit: contain;
+				position: absolute;
+				top: 0;
+				left: 0;
+				transition: opacity 0.3s ease;
+				/* 切换时的淡入淡出动画 */
+			}
+
+			.social-icon .img-hover {
+				opacity: 0;
+			}
+
+			/* 默认隐藏悬停状态的图 */
+
+			/* 鼠标悬浮时，正常图消失，悬停图出现 */
+			.social-btn-container:hover .img-normal {
+				opacity: 0;
+			}
+
+			.social-btn-container:hover .img-hover {
+				opacity: 1;
+			}
+
+			/* 2. 悬浮框的样式 */
+			.float-box {
+				position: absolute;
+				top: 100%;
+				left: 50%;
+				transform: translateX(-50%);
+				/* 让悬浮框水平居中对齐上面的小图标 */
+				margin-top: 15px;
+				/* 距离上面图标的空隙 */
+				background: #fff;
+				padding: 15px;
+				border-radius: 12px;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+				/* 漂亮的立体阴影 */
+				text-align: center;
+				z-index: 1000;
+
+				/* 重点：默认状态是透明且隐藏的 */
+				opacity: 0;
+				visibility: hidden;
+				transition: all 0.3s ease;
+			}
+
+			/* 悬浮框里的图片（比如二维码）和文字 */
+			.float-box img {
+				width: 120px;
+				height: 120px;
+				/* 这里控制弹出框里图片的大小 */
+				display: block;
+				margin-bottom: 10px;
+			}
+
+			.float-box p {
+				color: #333;
+				font-size: 14px;
+				font-weight: bold;
+				margin: 0;
+				white-space: nowrap;
+				/* 强制文字不换行 */
+			}
+
+			/* 3. 核心显示逻辑：当鼠标悬停，或者被 JS 打上 'pinned' (锁定) 标记时，显示浮框 */
+			.social-btn-container:hover .float-box,
+			.social-btn-container.pinned .float-box {
+				opacity: 1;
+				visibility: visible;
+			}
+
+			/* ================= 系列图片展示功能 (图集区) ================= */
+			.gallery-container {
+				width: 85%;
+				/* 图集区占据屏幕宽度的百分比，想更宽就改成 90% 或 95% */
+				max-width: 1200px;
+				/* 图集最宽不能超过1200像素（防止在大屏幕显示器上被拉得太难看） */
+				margin: 60px auto;
+				/* 上下留白 60px，左右自动居中 */
+				display: flex;
+				flex-direction: column;
+				gap: 60px;
+				/* 上下两个不同主题图集之间的间距 */
+				padding-bottom: 60px;
+			}
+
+			/* 每一个图集（比如“派对影像”、“猛兽抓拍”）的白色背景框 */
+			.series-box {
+				background: #fff;
+				border-radius: 30px;
+				/* 20px 是白框的圆角程度 */
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+				position: relative;
+			}
+
+			/* 图集顶部的彩色标题栏 */
+			.box-header {
+				height: 80px;
+				border-radius: 30px 30px 0 0;
+				display: flex;
+				align-items: center;
+				position: relative;
+				/* 标题栏自带的半透明斜线条纹背景 */
+				background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0.1) 10px, transparent 10px, transparent 20px);
+			}
+
+			/* 根据HTML里设置的类名，决定标题栏的底色 */
+			.theme-yellow .box-header {
+				background-color: #ffd633;
+			}
+
+			/* 黄色主题 */
+			.theme-grey .box-header {
+				background-color: #b0b3b8;
+			}
+
+			/* 灰色主题 */
+
+			/* 标题文字的样式 */
+			.box-title {
+				color: #fff;
+				font-size: 40px;
+				/* 文字大小 */
+				font-weight: 900;
+				/* 文字粗细 */
+				margin-left: 30px;
+				/* 距离左边的距离 */
+				text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+
+			/* 标题栏右侧的吉祥物装饰块 */
+			.mascot-img {
+				position: absolute;
+				right: 40px;
+				bottom: -19px;
+				height: 140px;
+				width: 180px;
+				z-index: 10;
+				/* background: #f2f; text-align: center; line-height: 100px; */
+				/* box-shadow: 0 -5px 10px rgba(0,0,0,0.10); */
+			}
+
+			/* 2. 新增：控制图片的显示方式 */
+			.mascot-img img {
+				width: 100%;
+				/* 图片宽度撑满 120px */
+				height: 100%;
+				/* 图片高度撑满 130px */
+				object-fit: contain;
+				/* ❗核心：保证图片按比例缩放，不会被拉伸变形 */
+				display: block;
+			}
+
+			.carousel-wrapper {
+				position: relative;
+				padding: 0px 15px;
+			}
+
+			/* 上下15px,左右20px留白 */
+
+			/* 存放所有图片的滑动轨道 */
+			.carousel-track {
+				display: flex;
+				gap: 20px;
+				/* 每一张图片之间的距离是 20px */
+				overflow-x: auto;
+				scroll-behavior: smooth;
+				scrollbar-width: none;
+				-ms-overflow-style: none;
+				padding-top: 25px;
+				padding-bottom: 25px;
+				padding-left: 20px;
+				pading-right: 20px;
+				user-select: none;
+			}
+
+			.carousel-track::-webkit-scrollbar {
+				display: none;
+			}
+
+			/* 隐藏丑陋的底部滚动条 */
+
+			/* 鼠标拖拽图片时的手型光标 */
+			.carousel-track.dragging {
+				scroll-behavior: auto;
+				cursor: grab;
+			}
+
+			.carousel-track.dragging:active {
+				cursor: grabbing;
+			}
+
+			/* ⭐️重要：每一张图片的单独尺寸设置 */
+			.carousel-item {
+				flex: 0 0 auto;
+				width: auto;
+				height: 220px;
+				/* ❗想要图片变大或变小，改这里的高度，宽度会自动跟着按比例变 */
+				border-radius: 16px;
+				/* 图片的圆角 */
+				overflow: hidden;
+				position: relative;
+				cursor: pointer;
+				transition: transform 0.4s ease, box-shadow 0.4s ease;
+				/* 鼠标放上去时的动态效果过度时间 */
+			}
+
+			/* 【新增】：禁止浏览器原生拖拽图片（防止出现半透明幽灵图打断滑动） */
+			.carousel-item img {
+				-webkit-user-drag: none;
+				user-drag: none;
+			}
+
+			/* 鼠标悬停在图片上时：图片会向上浮动 8px 并出现阴影 */
+			.carousel-item:hover {
+				transform: translateY(-8px);
+				box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+			}
+
+			/* 专门强制给最后一张卡片的右边增加 20px 的距离，用来展示阴影 */
+			.carousel-item:last-child {
+				margin-right: 20px;
+			}
+
+			/* 如果没有真实图片，这就是那些带有渐变色的测试图块样式 */
+			.carousel-item div.img-mock-gallery {
+				height: 100%;
+				aspect-ratio: 4 / 3;
+				/* 比例锁定为 4:3 */
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				color: #fff;
+				font-size: 24px;
+				font-weight: bold;
+				pointer-events: none;
+			}
+
+			/* 动图特效的相关设置 */
+			.gif-container {
+				width: auto;
+				height: 100%;
+				position: relative;
+			}
+
+			.gif-container .static-img {
+				position: relative;
+				height: 100%;
+				width: auto;
+				object-fit: cover;
+				display: block;
+				transition: opacity 0.4s ease;
+			}
+
+			.gif-container .gif-img {
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 100%;
+				width: 100%;
+				object-fit: cover;
+				opacity: 0;
+				transition: opacity 0.4s ease;
+			}
+
+			/* 鼠标悬浮时：隐藏静态图，显示动图 */
+			.carousel-item:hover .gif-container .gif-img {
+				opacity: 1;
+			}
+
+			.carousel-item:hover .gif-container .static-img {
+				opacity: 0;
+			}
+
+			/* 左右滑动按钮的样式 */
+			.arrow {
+				position: absolute;
+				top: 50%;
+				width: 36px;
+				height: 36px;
+				/* 按钮的宽高 */
+				border-radius: 50%;
+				/* 变成圆形 */
+				background-color: #fff;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+				border: none;
+				cursor: pointer;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				font-size: 18px;
+				color: #666;
+				z-index: 10;
+				transition: all 0.2s;
+			}
+
+			.arrow:hover {
+				background-color: #ffd633;
+				color: #fff;
+			}
+
+			/* 鼠标放在箭头上的颜色 */
+
+			.arrow-prev {
+				left: 0;
+				transform: translate(-50%, -50%);
+			}
+
+			.arrow-prev:hover {
+				transform: translate(-50%, -50%) scale(1.1);
+			}
+
+			/* 悬停时稍微变大1.1倍 */
+			.arrow-next {
+				right: 0;
+				transform: translate(50%, -50%);
+			}
+
+			.arrow-next:hover {
+				transform: translate(50%, -50%) scale(1.1);
+			}
+
+			/* ================= 点击图片放大后的黑底弹窗界面 ================= */
+			.lightbox {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.85);
+				/* 0.85 代表黑色的透明度，1是全黑不可见背景 */
+				z-index: 9999;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.3s;
+			}
+
+			.lightbox.active {
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+			.lightbox-content {
+				width: 80%;
+				max-width: 900px;
+				height: 70%;
+				border-radius: 12px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				color: #fff;
+				font-size: 24px;
+				background: transparent;
+				box-shadow: none;
+			}
+
+			/* 右上角的关闭大叉号 */
+			.lightbox-close {
+				position: absolute;
+				top: 30px;
+				right: 40px;
+				font-size: 40px;
+				color: #fff;
+				cursor: pointer;
+			}
+
+
+			/* ====================================================
            响应式设计 (媒体查询)：这部分是专门为平板和手机定制的样式
            当屏幕宽度变窄时，浏览器会自动应用下面的新规则来覆盖上面的规则
            ====================================================
         */
-        
-        /* 💻 当屏幕小于 1000px (平板/小屏笔记本) 时： */
-        @media (max-width: 1000px) { 
-            .header { padding: 0 20px; } 
-            .desktop-nav { display: none; } /* 隐藏电脑端的导航文字 */
-            .menu-btn { display: flex; } /* 显示“三条杠”菜单按钮 */
 
-            /* 弹出式侧边栏的样式 */
-            .sidebar { 
-                display: flex; flex-direction: column; gap: 20px; position: fixed; top: 0; right: -280px;  
-                width: 280px; height: 100vh; background-color: #fff; box-shadow: -5px 0 15px rgba(0,0,0,0.1); 
-                transition: right 0.3s ease; padding: 90px 20px 20px; z-index: 999; 
-            }
-            .sidebar.active { right: 0; }  
-            .sidebar .nav-item { width: 100%; border-bottom: 1px solid #eee; padding-bottom: 10px;} 
-            .sidebar .nav-item:hover { color: #ff5722; } 
-            .sidebar .dropdown-menu { position: static; transform: none; box-shadow: none; margin-top: 10px; background-color: #fafafa; } 
-            .sidebar .dropdown-menu a { text-align: left; padding-left: 15px; } 
+			/* 💻 当屏幕小于 1000px (平板/小屏笔记本) 时： */
+			@media (max-width: 1000px) {
+				.header {
+					padding: 0 20px;
+				}
 
-			.hero-images { width: 100%; justify-content: center; }
-            /* 将大横幅的高度缩小到 140px，防止在小屏幕上占太大面积 */
-            .hero-banner { height: 140px ; padding: 0;} 
-            .img-side { display: none; } /* 屏幕小了，隐藏横幅两边的装饰图 */
-            .img-center { 
-                width: 70%; height: auto;  
-                max-width: 400px; margin: 0 auto;
-            } 
-			.img-center img { width: 100%; hight: auto; object-fit: contain; }
+				.desktop-nav {
+					display: none;
+				}
 
-            .box-title { font-size: 26px; margin-left: 30px; } 
-            .mascot-img { right: 30px; } 
-            
-/* ============ 新增：缩小社交图标 ============ */
-            .social-icon { 
-                width: 40px; 
-                height: 40px; 
-            }
-            .social-btn-container {
-                margin-left: 15px; /* 间距稍微收紧 */
-            }
-			
-            /* 在中等屏幕下，稍微缩小图片的展示高度 */
-            .carousel-item { height: 180px; } 
-        }
+				/* 隐藏电脑端的导航文字 */
+				.menu-btn {
+					display: flex;
+				}
 
-        /* 📱 当屏幕小于 768px (手机) 时： */
-        @media (max-width: 768px) { 
-			.logo img { height: 35px; } /* Logo变小 */
-            
-            .hero-banner { hight: 140px; padding: 0; } 
-            .img-center { width: 70%; } 
+				/* 显示“三条杠”菜单按钮 */
 
-            .gallery-container { width: 95%; gap: 25px; margin-top: 25px; } /* 缩小左右留白，最大化利用手机屏幕 */
-            .box-title { font-size: 24px; margin-left: 20px; } /* 缩小标题文字 */
-            .mascot-img { height: 90px; right: 20px; width: 100px; bottom: -12px; } 
-            .box-header { height: 50px; } 
-            .carousel-wrapper { padding: 0px 5px; } 
-            
-            /* 手机上可以直接用手指滑动，所以隐藏了左右点击箭头 */
-            .arrow { display: none !important; }  
-            
-            /* 手机端的图片进一步缩小高度 */
-            .carousel-item { height: 140px; } 
-			
-/* ============ 新增：手机端社交图标与浮框缩放 ============ */
-            .social-icon { 
-                width: 34px; /* 图标变得和小标题更匹配 */
-                height: 34px; 
-            }
-            .social-btn-container {
-                margin-left: 10px; /* 图标更靠近标题 */
-            }
-            /* 连带缩小弹出的二维码和文字 */
-            .float-box {
-                padding: 10px;
-                margin-top: 10px;
-            }
-            .float-box img {
-                width: 90px;  /* 二维码缩小 */
-                height: 90px;
-            }
-            .float-box p {
-                font-size: 12px; /* 文字变小 */
-            }
-			
-        }
-    </style>
-</head>
-<body> 
-    <header class="header"> 
-        <a href="https://cottonkitten.cn" class="logo"><img src="image/index/logo.png" alt="Logo"></a>
-        
-        <nav class="nav-center desktop-nav"> 
-            <a href="#" class="nav-item active">主页</a> 
-			<a href="#" class="nav-item">其他内容制作中</a>
-<!--            <a href="#" class="nav-item">论坛</a> 
+				/* 弹出式侧边栏的样式 */
+				.sidebar {
+					display: flex;
+					flex-direction: column;
+					gap: 20px;
+					position: fixed;
+					top: 0;
+					right: -280px;
+					width: 280px;
+					height: 100vh;
+					background-color: #fff;
+					box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+					transition: right 0.3s ease;
+					padding: 90px 20px 20px;
+					z-index: 999;
+				}
+
+				.sidebar.active {
+					right: 0;
+				}
+
+				.sidebar .nav-item {
+					width: 100%;
+					border-bottom: 1px solid #eee;
+					padding-bottom: 10px;
+				}
+
+				.sidebar .nav-item:hover {
+					color: #ff5722;
+				}
+
+				.sidebar .dropdown-menu {
+					position: static;
+					transform: none;
+					box-shadow: none;
+					margin-top: 10px;
+					background-color: #fafafa;
+				}
+
+				.sidebar .dropdown-menu a {
+					text-align: left;
+					padding-left: 15px;
+				}
+
+				.hero-images {
+					width: 100%;
+					justify-content: center;
+				}
+
+				/* 将大横幅的高度缩小到 140px，防止在小屏幕上占太大面积 */
+				.hero-banner {
+					height: 140px;
+					padding: 0;
+				}
+
+				.img-side {
+					display: none;
+				}
+
+				/* 屏幕小了，隐藏横幅两边的装饰图 */
+				.img-center {
+					width: 70%;
+					height: auto;
+					max-width: 400px;
+					margin: 0 auto;
+				}
+
+				.img-center img {
+					width: 100%;
+					hight: auto;
+					object-fit: contain;
+				}
+
+				.box-title {
+					font-size: 26px;
+					margin-left: 30px;
+				}
+
+				.mascot-img {
+					right: 30px;
+				}
+
+				/* ============ 新增：缩小社交图标 ============ */
+				.social-icon {
+					width: 40px;
+					height: 40px;
+				}
+
+				.social-btn-container {
+					margin-left: 15px;
+					/* 间距稍微收紧 */
+				}
+
+				/* 在中等屏幕下，稍微缩小图片的展示高度 */
+				.carousel-item {
+					height: 180px;
+				}
+			}
+
+			/* 📱 当屏幕小于 768px (手机) 时： */
+			@media (max-width: 768px) {
+				.logo img {
+					height: 35px;
+				}
+
+				/* Logo变小 */
+
+				.hero-banner {
+					hight: 140px;
+					padding: 0;
+				}
+
+				.img-center {
+					width: 70%;
+				}
+
+				.gallery-container {
+					width: 95%;
+					gap: 25px;
+					margin-top: 25px;
+				}
+
+				/* 缩小左右留白，最大化利用手机屏幕 */
+				.box-title {
+					font-size: 24px;
+					margin-left: 20px;
+				}
+
+				/* 缩小标题文字 */
+				.mascot-img {
+					height: 90px;
+					right: 20px;
+					width: 100px;
+					bottom: -12px;
+				}
+
+				.box-header {
+					height: 50px;
+				}
+
+				.carousel-wrapper {
+					padding: 0px 5px;
+				}
+
+				/* 手机上可以直接用手指滑动，所以隐藏了左右点击箭头 */
+				.arrow {
+					display: none !important;
+				}
+
+				/* 手机端的图片进一步缩小高度 */
+				.carousel-item {
+					height: 140px;
+				}
+
+				/* ============ 新增：手机端社交图标与浮框缩放 ============ */
+				.social-icon {
+					width: 34px;
+					/* 图标变得和小标题更匹配 */
+					height: 34px;
+				}
+
+				.social-btn-container {
+					margin-left: 10px;
+					/* 图标更靠近标题 */
+				}
+
+				/* 连带缩小弹出的二维码和文字 */
+				.float-box {
+					padding: 10px;
+					margin-top: 10px;
+				}
+
+				.float-box img {
+					width: 90px;
+					/* 二维码缩小 */
+					height: 90px;
+				}
+
+				.float-box p {
+					font-size: 12px;
+					/* 文字变小 */
+				}
+
+			}
+
+			/* ================= 网站底部 Footer 样式 ================= */
+			.site-footer {
+				background-color: #3b3531;
+				/* 底部深褐色背景 */
+				color: #b0b0b0;
+				/* 灰白色文字 */
+				padding: 50px 20px;
+				font-size: 13px;
+				text-align: center;
+				line-height: 1.8;
+				margin-top: 50px;
+				/* 距离上方内容的间距 */
+			}
+
+			.footer-row {
+				margin-bottom: 5px;
+				/* 每行之间的间距 */
+			}
+
+			/* 链接的默认样式 */
+			.site-footer a {
+				color: #b0b0b0;
+				transition: color 0.3s;
+			}
+
+			/* 鼠标悬停在链接上时变成白色 */
+			.site-footer a:hover {
+				color: #ffffff;
+			}
+
+			/* 竖线分隔符样式 */
+			.site-footer .divider {
+				margin: 0 8px;
+				color: #666;
+				/* 竖线颜色稍微暗一点 */
+			}
+
+			/* 第一行政策链接加粗变白一点，模拟原图效果 */
+			.footer-links a {
+				color: #d1d1d1;
+				font-weight: bold;
+			}
+
+			/* 邮箱链接样式 */
+			.email-link {
+				color: #d1d1d1 !important;
+				/* 强制颜色，防止被全局超链接覆盖 */
+				text-decoration: none !important;
+				cursor: pointer;
+			}
+
+			/* 鼠标悬停在邮箱链接上的高亮效果 */
+			.email-link:hover {
+				color: #ffffff !important;
+				/* 1. 文字变为纯白色，对比度更高 */
+				text-decoration: none !important;
+				/* 确保高亮时不显示下划线 */
+				text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+				/* 2. 增加一点白色的发光感 */
+				transition: all 0.3s ease;
+				/* 3. 让高亮的过程变得平滑（0.3秒渐变） */
+
+				/* 如果你想要更明显的“高亮块”效果，可以取消下面这两行的注释： */
+				/* background-color: rgba(255, 255, 255, 0.1); */
+				/* border-radius: 4px; */
+			}
+
+			/* 备案行警徽图标和文字对齐 */
+			.record-info {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				gap: 5px;
+				/* 图标和文字的间距 */
+			}
+
+			.police-icon {
+				height: 16px;
+				/* 警徽图标大小 */
+				width: auto;
+			}
+
+			/* 手机端适配：如果屏幕比较小，让文字自然换行并缩小间距 */
+			@media (max-width: 768px) {
+				.site-footer {
+					font-size: 12px;
+					padding: 30px 15px;
+				}
+
+				.footer-row {
+					margin-bottom: 15px;
+					line-height: 1.6;
+				}
+
+				.record-info {
+					flex-direction: column;
+					/* 手机端备案信息可能很长，允许图标和文字分上下行 */
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header class="header">
+			<a href="https://cottonkitten.cn" class="logo"><img src="image/index/logo.png" alt="Logo"></a>
+
+			<nav class="nav-center desktop-nav">
+				<a href="#" class="nav-item active">主页</a>
+				<a href="zh/statement.html" class="nav-item">声明</a>
+				<a style="color:#b0b0b0">其他内容制作中</a>
+				<!--            <a href="#" class="nav-item">论坛</a> 
             
             <div class="nav-item has-dropdown"> 
                 <span>商城</span> 
@@ -413,369 +952,425 @@
                 </div>
             </div>
             <a href="#" class="nav-item">活动中心</a> -->
-        </nav>
+			</nav>
 
-        <div class="nav-right desktop-nav"> 
-            <div class="nav-item has-dropdown"> <span>Language</span>
-                <div class="dropdown-menu">
-                    <a href="#">中文</a>
-                    <a href="index_us.html">English</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="menu-btn" id="menuToggle"> <span></span><span></span><span></span> </div>
-    </header> 
-    
-    <aside class="sidebar" id="sidebar"> 
-        <a href="#" class="nav-item active">主页</a> 
-		<a href="#" class="nav-item">其他内容制作中</a>
-<!--        <a href="#" class="nav-item">论坛</a>
+			<div class="nav-right desktop-nav">
+				<div class="nav-item has-dropdown"> <span>Language</span>
+					<div class="dropdown-menu">
+						<a href="#">中文</a>
+						<a href="index_us.html">English</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="menu-btn" id="menuToggle"> <span></span><span></span><span></span> </div>
+		</header>
+
+		<aside class="sidebar" id="sidebar">
+			<a href="#" class="nav-item active">主页</a>
+			<a href="zh/statement.html" class="nav-item">声明</a>
+			<a style="color:#b0b0b0">其他内容制作中</a>
+			<!--        <a href="#" class="nav-item">论坛</a>
         <div class="nav-item has-dropdown">
             <span>商城 ▼</span>
             <div class="dropdown-menu"><a href="#">商城 1</a><a href="#">商城 2</a></div>
         </div>
         <a href="#" class="nav-item">活动中心</a> -->
-        <div class="nav-item has-dropdown">
-            <span>Language</span>
-            <div class="dropdown-menu"><a href="#">中文</a><a href="index_us.html">English</a></div>
-        </div>
-    </aside>
+			<div class="nav-item has-dropdown">
+				<span>Language</span>
+				<div class="dropdown-menu">
+					<a href="#">中文</a>
+					<a href="index_us.html">English</a>
+				</div>
+			</div>
+		</aside>
 
-    <main> 
-        <section class="hero-banner"> 
-            <div class="hero-images">
-                <div class="mock-img img-side">
-                    <img src="image/index/hengfu/left.png" alt="侧边图2" style="width: 100%; height: 100%; object-fit: cover;">
-                </div> 
-                <div class="mock-img img-center">
-                    <img src="image/index/hengfu/biaoti.png" alt="主视觉图" style="width: 100%; height: 100%; object-fit: cover;">
-                </div> 
-                <div class="mock-img img-side">
-                    <img src="image/index/hengfu/right.png" alt="侧边图3" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-            </div>
-        </section>
-        
-        <div class="gallery-container"> 
-		
-			<!-- 新板块添加到这一行下面 -->
-			
-			
-			<!-- 这是板块的开始 -->
-			<div class="series-box theme-yellow"> <!-- 这个theme-yellow是板块上面颜色的选择，要其他颜色需要在上面CSS里面添加，再在下面调用 -->
-			    <div class="box-header"> 
-			        <div class="box-title">第一弹</div> <!-- 记得改名称 -->
-					<div class="social-btn-container" id="socialBtn">
-			            <div class="social-icon">
-			                <img src="image/index/wxbq0.png" class="img-normal" alt="默认图标">
-				               <img src="image/index/wxbq1.png" class="img-hover" alt="悬停时的图标">
-							</div>
-				
-					        <div class="float-box">
-					            <img src="image/no1/ma.jpg" alt="二维码图片"> <!-- 记得改二维码图片 -->
-					            <p>微信扫一扫<br>添加到表情</p>
-					        </div>
-					    </div>
-					<div class="mascot-img">
-						<img src="image/no1/guajian.png" alt="吉祥物"> <!-- 记得改吉祥物 -->
+		<main>
+			<section class="hero-banner">
+				<div class="hero-images">
+					<div class="mock-img img-side">
+						<img src="image/index/hengfu/left.png" alt="侧边图2"
+							style="width: 100%; height: 100%; object-fit: cover;">
+					</div>
+					<div class="mock-img img-center">
+						<img src="image/index/hengfu/biaoti.png" alt="主视觉图"
+							style="width: 100%; height: 100%; object-fit: cover;">
+					</div>
+					<div class="mock-img img-side">
+						<img src="image/index/hengfu/right.png" alt="侧边图3"
+							style="width: 100%; height: 100%; object-fit: cover;">
 					</div>
 				</div>
-			    
-			    <div class="carousel-wrapper"> 
-			        <button class="arrow arrow-prev" onclick="scrollTrack(this, -1)">❮</button> 
-			        
-			        <div class="carousel-track"> 
-			            <div class="carousel-item" onclick="openLightbox('image/no1/a/1.gif')"> <!-- 单引号里面是高清大图的位置 -->
-			                <div class="gif-container">
-			                    <img src="image/no1/s/1.png" class="static-img" alt="缩略图1">
-			                    <img src="image/no1/as/1.gif" class="gif-img" alt="动图1">
-			                </div>
-			            </div>
-			
-			            <div class="carousel-item" onclick="openLightbox('image/no1/a/2.gif')">
-			                <div class="gif-container">
-			                    <img src="image/no1/s/2.png" class="static-img" alt="缩略图2">
-			                    <img src="image/no1/as/2.gif" class="gif-img" alt="动图2">
-			                </div>
-			            </div>
-			
-			            <div class="carousel-item" onclick="openLightbox('image/no1/a/3.gif')">
-			                <div class="gif-container">
-			                    <img src="image/no1/s/3.png" class="static-img" alt="缩略图3">
-			                    <img src="image/no1/as/3.gif" class="gif-img" alt="动图3">
-			                </div>
-			            </div>
-						
-						<div class="carousel-item" onclick="openLightbox('image/no1/a/4.gif')">
-						    <div class="gif-container">
-						        <img src="image/no1/s/4.png" class="static-img" alt="缩略图4">
-						        <img src="image/no1/as/4.gif" class="gif-img" alt="动图4">
-						    </div>
-						</div>
-			            <div class="carousel-item" onclick="openLightbox('image/no1/a/5.gif')">
-			                <div class="gif-container">
-			                    <img src="image/no1/s/5.png" class="static-img" alt="缩略图5">
-			                    <img src="image/no1/as/5.gif" class="gif-img" alt="动图5">
-			                </div>
-			            </div>
-						<div class="carousel-item" onclick="openLightbox('image/no1/a/6.gif')">
-						    <div class="gif-container">
-						        <img src="image/no1/s/6.png" class="static-img" alt="缩略图6">
-						        <img src="image/no1/as/6.gif" class="gif-img" alt="动图6">
-						    </div>
-						</div>
-						<div class="carousel-item" onclick="openLightbox('image/no1/a/7.gif')">
-						    <div class="gif-container">
-						        <img src="image/no1/s/7.png" class="static-img" alt="缩略图7">
-						        <img src="image/no1/as/7.gif" class="gif-img" alt="动图7">
-						    </div>
-						</div>
-						<div class="carousel-item" onclick="openLightbox('image/no1/a/8.gif')">
-						    <div class="gif-container">
-						        <img src="image/no1/s/8.png" class="static-img" alt="缩略图8">
-						        <img src="image/no1/as/8.gif" class="gif-img" alt="动图8">
-						    </div>
-						</div>
-						
-			        </div>
-			        <button class="arrow arrow-next" onclick="scrollTrack(this, 1)">❯</button> 
-			    </div>
-			</div>
-			<!-- 这是板块的结束 -->
-			
-			<!-- 这是板块的开始 -->
-            <div class="series-box theme-grey"> <!-- 这个theme-grey是板块上面颜色的选择，要其他颜色需要在上面CSS里面添加，再在下面调用 -->
-                <div class="box-header"> 
-                    <div class="box-title">独立作品</div> <!-- 记得改名称 -->
-					<div class="social-btn-container" id="socialBtn">
-			            <div class="social-icon">
-			                <img src="image/index/wxbq0.png" class="img-normal" alt="默认图标">
-				               <img src="image/index/wxbq1.png" class="img-hover" alt="悬停时的图标">
+			</section>
+
+			<div class="gallery-container">
+
+				<!-- 新板块添加到这一行下面 -->
+
+
+				<!-- 这是板块的开始 -->
+				<div class="series-box theme-yellow"> <!-- 这个theme-yellow是板块上面颜色的选择，要其他颜色需要在上面CSS里面添加，再在下面调用 -->
+					<div class="box-header">
+						<div class="box-title">第一弹</div> <!-- 记得改名称 -->
+						<div class="social-btn-container" id="socialBtn">
+							<div class="social-icon">
+								<img src="image/index/wxbq0.png" class="img-normal" alt="默认图标">
+								<img src="image/index/wxbq1.png" class="img-hover" alt="悬停时的图标">
 							</div>
-				
-					        <div class="float-box">
+
+							<div class="float-box">
+								<img src="image/no1/ma.jpg" alt="二维码图片"> <!-- 记得改二维码图片 -->
+								<p>微信扫一扫<br>添加到表情</p>
+							</div>
+						</div>
+						<div class="mascot-img">
+							<img src="image/no1/guajian.png" alt="吉祥物"> <!-- 记得改吉祥物 -->
+						</div>
+					</div>
+
+					<div class="carousel-wrapper">
+						<button class="arrow arrow-prev" onclick="scrollTrack(this, -1)">❮</button>
+
+						<div class="carousel-track">
+							<div class="carousel-item" onclick="openLightbox('image/no1/a/1.gif')">
+								<!-- 单引号里面是高清大图的位置 -->
+								<div class="gif-container">
+									<img src="image/no1/s/1.png" loading="lazy"class="static-img" alt="缩略图1">
+									<img src="image/no1/as/1.gif" loading="lazy"class="gif-img" alt="动图1">
+								</div>
+							</div>
+
+							<div class="carousel-item" onclick="openLightbox('image/no1/a/2.gif')">
+								<div class="gif-container">
+									<img src="image/no1/s/2.png" loading="lazy"class="static-img" alt="缩略图2">
+									<img src="image/no1/as/2.gif" loading="lazy"class="gif-img" alt="动图2">
+								</div>
+							</div>
+
+							<div class="carousel-item" onclick="openLightbox('image/no1/a/3.gif')">
+								<div class="gif-container">
+									<img src="image/no1/s/3.png" loading="lazy"class="static-img" alt="缩略图3">
+									<img src="image/no1/as/3.gif" loading="lazy"class="gif-img" alt="动图3">
+								</div>
+							</div>
+
+							<div class="carousel-item" onclick="openLightbox('image/no1/a/4.gif')">
+								<div class="gif-container">
+									<img src="image/no1/s/4.png" loading="lazy"class="static-img" alt="缩略图4">
+									<img src="image/no1/as/4.gif" loading="lazy"class="gif-img" alt="动图4">
+								</div>
+							</div>
+							<div class="carousel-item" onclick="openLightbox('image/no1/a/5.gif')">
+								<div class="gif-container">
+									<img src="image/no1/s/5.png" loading="lazy"class="static-img" alt="缩略图5">
+									<img src="image/no1/as/5.gif" loading="lazy"class="gif-img" alt="动图5">
+								</div>
+							</div>
+							<div class="carousel-item" onclick="openLightbox('image/no1/a/6.gif')">
+								<div class="gif-container">
+									<img src="image/no1/s/6.png" loading="lazy"class="static-img" alt="缩略图6">
+									<img src="image/no1/as/6.gif" loading="lazy"class="gif-img" alt="动图6">
+								</div>
+							</div>
+							<div class="carousel-item" onclick="openLightbox('image/no1/a/7.gif')">
+								<div class="gif-container">
+									<img src="image/no1/s/7.png" loading="lazy"class="static-img" alt="缩略图7">
+									<img src="image/no1/as/7.gif" loading="lazy"class="gif-img" alt="动图7">
+								</div>
+							</div>
+							<div class="carousel-item" onclick="openLightbox('image/no1/a/8.gif')">
+								<div class="gif-container">
+									<img src="image/no1/s/8.png" loading="lazy"class="static-img" alt="缩略图8">
+									<img src="image/no1/as/8.gif" loading="lazy"class="gif-img" alt="动图8">
+								</div>
+							</div>
+
+						</div>
+						<button class="arrow arrow-next" onclick="scrollTrack(this, 1)">❯</button>
+					</div>
+				</div>
+				<!-- 这是板块的结束 -->
+
+				<!-- 这是板块的开始 -->
+				<div class="series-box theme-grey"> <!-- 这个theme-grey是板块上面颜色的选择，要其他颜色需要在上面CSS里面添加，再在下面调用 -->
+					<div class="box-header">
+						<div class="box-title">独立作品</div> <!-- 记得改名称 -->
+						<div class="social-btn-container" id="socialBtn">
+							<div class="social-icon">
+								<img src="image/index/wxbq0.png" class="img-normal" alt="默认图标">
+								<img src="image/index/wxbq1.png" class="img-hover" alt="悬停时的图标">
+							</div>
+
+							<div class="float-box">
 								<p>暂未发布<br>微信表情</p>
 								<!-- <img src="image/index/hengfu/200.gif" alt="二维码图片"> --> <!-- 记得改二维码图片 -->
-					            <!-- <p>微信扫一扫<br>添加到表情</p> -->
-					        </div>
-					    </div>
-					<div class="mascot-img">
-						<img src="image/noind/guajian.png" alt="吉祥物"> <!-- 记得改吉祥物 -->
+								<!-- <p>微信扫一扫<br>添加到表情</p> -->
+							</div>
+						</div>
+						<div class="mascot-img">
+							<img src="image/noind/guajian.png" alt="吉祥物"> <!-- 记得改吉祥物 -->
+						</div>
+					</div>
+
+					<div class="carousel-wrapper">
+						<button class="arrow arrow-prev" onclick="scrollTrack(this, -1)">❮</button>
+
+						<div class="carousel-track">
+							<div class="carousel-item" onclick="openLightbox('image/noind/a/20260214.gif')">
+								<!-- 单引号里面是高清大图的位置 -->
+								<div class="gif-container">
+									<img src="image/noind/s/20260214.png" loading="lazy"class="static-img" alt="缩略图1">
+									<img src="image/noind/as/20260214.gif" loading="lazy"class="gif-img" alt="动图1">
+								</div>
+							</div>
+
+							<div class="carousel-item" onclick="openLightbox('image/noind/a/passion.png')">
+								<div class="gif-container">
+									<img src="image/noind/s/passion.png" loading="lazy"class="static-img" alt="缩略图2">
+									<img src="image/noind/as/passion.png" loading="lazy"class="gif-img" alt="动图2">
+								</div>
+							</div>
+
+							<div class="carousel-item" onclick="openLightbox('image/noind/a/3.png')">
+								<div class="gif-container">
+									<img src="image/noind/s/3.png" loading="lazy"class="static-img" alt="缩略图2">
+									<img src="image/noind/as/3.png" loading="lazy"class="gif-img" alt="动图2">
+								</div>
+							</div>
+
+						</div>
+						<button class="arrow arrow-next" onclick="scrollTrack(this, 1)">❯</button>
 					</div>
 				</div>
-                
-                <div class="carousel-wrapper"> 
-                    <button class="arrow arrow-prev" onclick="scrollTrack(this, -1)">❮</button> 
-                    
-                    <div class="carousel-track"> 
-                        <div class="carousel-item" onclick="openLightbox('image/noind/a/20260214.gif')"> <!-- 单引号里面是高清大图的位置 -->
-                            <div class="gif-container">
-                                <img src="image/noind/s/20260214.png" class="static-img" alt="缩略图1">
-                                <img src="image/noind/as/20260214.gif" class="gif-img" alt="动图1">
-                            </div>
-                        </div>
+				<!-- 这是板块的结束 -->
 
-                        <div class="carousel-item" onclick="openLightbox('image/noind/a/passion.png')">
-                            <div class="gif-container">
-                                <img src="image/noind/s/passion.png" class="static-img" alt="缩略图2">
-                                <img src="image/noind/as/passion.png" class="gif-img" alt="动图2">
-                            </div>
-                        </div>
-						
-						<div class="carousel-item" onclick="openLightbox('image/noind/a/3.png')">
-						    <div class="gif-container">
-						        <img src="image/noind/s/3.png" class="static-img" alt="缩略图2">
-						        <img src="image/noind/as/3.png" class="gif-img" alt="动图2">
-						    </div>
-						</div>
 
-                    </div>
-                    <button class="arrow arrow-next" onclick="scrollTrack(this, 1)">❯</button> 
-                </div>
-            </div>
-			<!-- 这是板块的结束 -->
-            
-			
-        </div>
+			</div>
 
 
 
-        <div style="padding: 20px; text-align: center; color: #aaa; margin-bottom: 50px;"> <p>敬请期待</p> </div>
-    </main>
+			<div style="padding: 20px; text-align: center; color: #aaa; margin-bottom: 50px;">
+				<p>敬请期待</p>
+			</div>
+		</main>
 
-    <div class="lightbox" id="lightbox"> 
-        <div class="lightbox-close" onclick="closeLightbox()">×</div> 
-        <div class="lightbox-content" id="lightbox-content">加载中...</div> 
-    </div>
+		<footer class="site-footer">
+			<div class="footer-row footer-links">
+				<!-- <a href="#">文字</a> <span class="divider">|</span>
+	            <a href="#">文字</a> <span class="divider">|</span>
+	            <a href="#">文字</a> <span class="divider">|</span>
+	            <a href="#">文字</a> <span class="divider">|</span> -->
+				<a>欢迎进行二次创作</a>
+			</div>
 
-    <script> 
-        window.isDraggingGallery = false; // 记录当前是否正在拖拽图片
+			<div class="footer-row">
+				<!-- 支持: <a href="mailto:邮箱地址" class="allow-select email-link">邮箱地址</a> <span class="divider">|</span>
+	            媒体和: <a href="mailto:邮箱地址" class="allow-select email-link">邮箱地址</a> <span class="divider">|</span> -->
+				作者邮箱: <a href="mailto:cotonkitten01@gmail.com"
+					class="allow-select email-link">cotonkitten01@gmail.com</a>
+			</div>
 
-// === 新增：全局拦截网页选中事件 ===
-        document.addEventListener('selectstart', function(e) {
-            e.preventDefault(); // 彻底阻止鼠标拖拽选中文本和 Ctrl+A 全选行为
-        });
+			<div class="footer-row">
+				© ChangYe
+			</div>
 
-// === 社交按钮“点击锁定”逻辑 ===
-        const socialBtn = document.getElementById('socialBtn');
-        
-        // 1. 当点击图标区域时
-        socialBtn.addEventListener('click', function(e) {
-            // 阻止事件冒泡：防止点图标时触发了下面“点击网页空白处关闭”的指令
-            e.stopPropagation(); 
-            // toggle的意思是：如果没有 pinned 就加上，如果有就去掉（点一下锁定，再点一下解锁）
-            this.classList.toggle('pinned');
-        });
+			<div class="footer-row footer-links">
+				声明：本网页为作者使用AI，仿照“<a href="https://partyanimals.cn/media" >猛兽派对</a>”官网制作
+			</div>
+		</footer>
 
-        // 2. 当点击网页的其他任意地方时
-        document.addEventListener('click', function(e) {
-            // 如果你点击的地方，不在这个按钮区域内部，就解除锁定（隐藏浮框）
-            if (!socialBtn.contains(e.target)) {
-                socialBtn.classList.remove('pinned');
-            }
-        });
-        // 注意：滑动网页（scroll）不需要写代码，因为它本身就不会触发 click 事件，所以浮框自然不会消失。
+		<div class="lightbox" id="lightbox">
+			<div class="lightbox-close" onclick="closeLightbox()">×</div>
+			<div class="lightbox-content" id="lightbox-content">加载中...</div>
+		</div>
 
-        // === 1. 手机端侧边导航栏打开/关闭逻辑 ===
-        const menuToggle = document.getElementById('menuToggle'); 
-        const sidebar = document.getElementById('sidebar'); 
+		<script>
+			window.isDraggingGallery = false; // 记录当前是否正在拖拽图片
 
-        // 点击三条杠按钮，显示/隐藏侧边栏
-        menuToggle.addEventListener('click', () => { sidebar.classList.toggle('active'); });
 
-        // === 2. 导航栏下拉菜单逻辑 ===
-        const dropdowns = document.querySelectorAll('.has-dropdown'); 
-        dropdowns.forEach(dropdown => { 
-            dropdown.addEventListener('click', function(e) { 
-                e.stopPropagation(); 
-                const isOpen = this.classList.contains('open'); 
-                dropdowns.forEach(d => d.classList.remove('open')); // 点一个的时候，把其他的关掉
-                if (!isOpen) { this.classList.add('open'); } 
-            });
-        });
-        // 点网页空白处，收起所有菜单和侧边栏
-        document.addEventListener('click', (e) => { 
-            dropdowns.forEach(d => d.classList.remove('open')); 
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) { 
-                sidebar.classList.remove('active'); 
-            }
-        });
+			// === 社交按钮“点击锁定”逻辑 ===
+			const socialBtn = document.getElementById('socialBtn');
 
-        // === 3. 左右点击按钮滑动图片的逻辑 ===
-        function scrollTrack(btn, direction) { 
-            const track = btn.parentElement.querySelector('.carousel-track'); 
-            const item = track.querySelector('.carousel-item'); 
-            const scrollAmount = item.offsetWidth + 20; // 每次滑动一张图片+间距的距离
-            track.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' }); 
-        }
-
-        // === 4. 鼠标按住拖拽滑动图片的逻辑（模仿手机触屏滑动） ===
-        const carousels = document.querySelectorAll('.carousel-wrapper'); 
-        carousels.forEach(wrapper => { 
-            const track = wrapper.querySelector('.carousel-track'); 
-            const prevBtn = wrapper.querySelector('.arrow-prev'); 
-            const nextBtn = wrapper.querySelector('.arrow-next'); 
-
-            let isDown = false; 
-            let startX; 
-            let scrollLeft; 
-
-            // 鼠标按下
-            track.addEventListener('mousedown', (e) => { 
-                isDown = true; 
-                window.isDraggingGallery = false; 
-                track.classList.add('dragging'); 
-                startX = e.pageX - track.offsetLeft; 
-                scrollLeft = track.scrollLeft; 
-            });
-            // 鼠标离开区域
-            track.addEventListener('mouseleave', () => { isDown = false; track.classList.remove('dragging'); });
-            // 鼠标松开
-            track.addEventListener('mouseup', () => { 
-                isDown = false; 
-                track.classList.remove('dragging'); 
-                // 稍微延迟一下，防止拖拽完松开鼠标时，误触发了图片的点击放大功能
-                setTimeout(() => { window.isDraggingGallery = false; }, 50); 
-            });
-            // 鼠标移动
-            track.addEventListener('mousemove', (e) => { 
-                if (!isDown) return; 
-                e.preventDefault(); 
-                const x = e.pageX - track.offsetLeft; 
-                const walk = (x - startX) * 1; // 1 是滑动灵敏度
-                
-                // 如果滑动距离超过5像素，就判定为拖拽，禁止触发弹窗大图
-                if (Math.abs(walk) > 5) { window.isDraggingGallery = true; }
-                track.scrollLeft = scrollLeft - walk; 
-            });
-			
-			// === 5. 滑动到两头时，隐藏按钮 & 边缘遮罩渐变的逻辑 ===
-			carousels.forEach(wrapper => { 
-			    const track = wrapper.querySelector('.carousel-track'); 
-			    const prevBtn = wrapper.querySelector('.arrow-prev'); 
-			    const nextBtn = wrapper.querySelector('.arrow-next'); 
-			
-			    const updateArrowsVisibility = () => { 
-			        const isAtStart = Math.ceil(track.scrollLeft) <= 0; // 是否在最左端
-			        const isAtEnd = Math.ceil(track.scrollLeft + track.clientWidth) >= track.scrollWidth - 1; // 是否在最右端
-			        
-			        // 如果屏幕比较大，按需隐藏/显示左右按钮
-			        if (window.innerWidth > 768) { 
-			            prevBtn.style.display = isAtStart ? 'none' : 'flex';
-			            nextBtn.style.display = isAtEnd ? 'none' : 'flex';
-			        }
-			
-			        // 给左右边缘加一层黑色到透明的渐变，让图片显得像是“消失在边缘”
-			        if (track.scrollWidth <= track.clientWidth) {
-			            track.style.webkitMaskImage = 'none';
-			            track.style.maskImage = 'none';
-			        } else if (isAtStart) {
-			            track.style.webkitMaskImage = 'linear-gradient(to right, black 0%, black 90%, transparent 100%)';
-			            track.style.maskImage = 'linear-gradient(to right, black 0%, black 90%, transparent 100%)';
-			        } else if (isAtEnd) {
-			            track.style.webkitMaskImage = 'linear-gradient(to right, transparent 0%, black 10%, black 100%)';
-			            track.style.maskImage = 'linear-gradient(to right, transparent 0%, black 10%, black 100%)';
-			        } else {
-			            track.style.webkitMaskImage = 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)';
-			            track.style.maskImage = 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)';
-			        }
-			    };
-			
-			    track.addEventListener('scroll', updateArrowsVisibility); 
-			    updateArrowsVisibility(); // 刚打开时先按当前状态计算一次
-			    window.addEventListener('load', updateArrowsVisibility); // ❗核心修复：耐心等待网页上所有图片完全加载完毕后，再精准计算一次
-			    window.addEventListener('resize', updateArrowsVisibility); 
+			// 1. 当点击图标区域时
+			socialBtn.addEventListener('click', function(e) {
+				// 阻止事件冒泡：防止点图标时触发了下面“点击网页空白处关闭”的指令
+				e.stopPropagation();
+				// toggle的意思是：如果没有 pinned 就加上，如果有就去掉（点一下锁定，再点一下解锁）
+				this.classList.toggle('pinned');
 			});
-        });
 
-        // === 6. 弹窗看大图的逻辑 ===
-        const lightbox = document.getElementById('lightbox'); 
-        const lightboxContent = document.getElementById('lightbox-content'); 
+			// 2. 当点击网页的其他任意地方时
+			document.addEventListener('click', function(e) {
+				// 如果你点击的地方，不在这个按钮区域内部，就解除锁定（隐藏浮框）
+				if (!socialBtn.contains(e.target)) {
+					socialBtn.classList.remove('pinned');
+				}
+			});
+			// 注意：滑动网页（scroll）不需要写代码，因为它本身就不会触发 click 事件，所以浮框自然不会消失。
 
-        // 打开弹窗
-        function openLightbox(mediaUrl) { 
-            if (window.isDraggingGallery) return; // 如果刚才是在拖动图片，就不执行放大
-        
-            // 把你点击的那个图片地址（mediaUrl），填入到这个放大框里面
-            lightboxContent.innerHTML = `<img src="${mediaUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">`; 
-            lightboxContent.style.background = 'transparent'; 
-            lightboxContent.style.boxShadow = 'none'; 
-        
-            lightbox.classList.add('active'); 
-            document.body.style.overflow = 'hidden';  // 弹出时，禁止网页背景跟着上下滚动
-        }
+			// === 1. 手机端侧边导航栏打开/关闭逻辑 ===
+			const menuToggle = document.getElementById('menuToggle');
+			const sidebar = document.getElementById('sidebar');
 
-        // 关闭弹窗
-        function closeLightbox() { 
-            lightbox.classList.remove('active'); 
-            document.body.style.overflow = 'auto'; // 恢复网页的上下滚动
-        }
+			// 点击三条杠按钮，显示/隐藏侧边栏
+			menuToggle.addEventListener('click', () => {
+				sidebar.classList.toggle('active');
+			});
 
-        // 点击黑色的背景区域，也能关闭弹窗
-        lightbox.addEventListener('click', function(e) { 
-            if (e.target === lightbox) { closeLightbox(); } 
-        });
-    </script>
-</body>
+			// === 2. 导航栏下拉菜单逻辑 ===
+			const dropdowns = document.querySelectorAll('.has-dropdown');
+			dropdowns.forEach(dropdown => {
+				dropdown.addEventListener('click', function(e) {
+					e.stopPropagation();
+					const isOpen = this.classList.contains('open');
+					dropdowns.forEach(d => d.classList.remove('open')); // 点一个的时候，把其他的关掉
+					if (!isOpen) {
+						this.classList.add('open');
+					}
+				});
+			});
+			// 点网页空白处，收起所有菜单和侧边栏
+			document.addEventListener('click', (e) => {
+				dropdowns.forEach(d => d.classList.remove('open'));
+				if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+					sidebar.classList.remove('active');
+				}
+			});
+
+			// === 3. 左右点击按钮滑动图片的逻辑 ===
+			function scrollTrack(btn, direction) {
+				const track = btn.parentElement.querySelector('.carousel-track');
+				const item = track.querySelector('.carousel-item');
+				const scrollAmount = item.offsetWidth + 20; // 每次滑动一张图片+间距的距离
+				track.scrollBy({
+					left: scrollAmount * direction,
+					behavior: 'smooth'
+				});
+			}
+
+			// === 4. 鼠标按住拖拽滑动图片的逻辑（模仿手机触屏滑动） ===
+			const carousels = document.querySelectorAll('.carousel-wrapper');
+			carousels.forEach(wrapper => {
+				const track = wrapper.querySelector('.carousel-track');
+				const prevBtn = wrapper.querySelector('.arrow-prev');
+				const nextBtn = wrapper.querySelector('.arrow-next');
+
+				let isDown = false;
+				let startX;
+				let scrollLeft;
+
+				// 鼠标按下
+				track.addEventListener('mousedown', (e) => {
+					isDown = true;
+					window.isDraggingGallery = false;
+					track.classList.add('dragging');
+					startX = e.pageX - track.offsetLeft;
+					scrollLeft = track.scrollLeft;
+				});
+				// 鼠标离开区域
+				track.addEventListener('mouseleave', () => {
+					isDown = false;
+					track.classList.remove('dragging');
+				});
+				// 鼠标松开
+				track.addEventListener('mouseup', () => {
+					isDown = false;
+					track.classList.remove('dragging');
+					// 稍微延迟一下，防止拖拽完松开鼠标时，误触发了图片的点击放大功能
+					setTimeout(() => {
+						window.isDraggingGallery = false;
+					}, 50);
+				});
+				// 鼠标移动
+				track.addEventListener('mousemove', (e) => {
+					if (!isDown) return;
+					e.preventDefault();
+					const x = e.pageX - track.offsetLeft;
+					const walk = (x - startX) * 1; // 1 是滑动灵敏度
+
+					// 如果滑动距离超过5像素，就判定为拖拽，禁止触发弹窗大图
+					if (Math.abs(walk) > 5) {
+						window.isDraggingGallery = true;
+					}
+					track.scrollLeft = scrollLeft - walk;
+				});
+
+				// === 5. 滑动到两头时，隐藏按钮 & 边缘遮罩渐变的逻辑 ===
+				carousels.forEach(wrapper => {
+					const track = wrapper.querySelector('.carousel-track');
+					const prevBtn = wrapper.querySelector('.arrow-prev');
+					const nextBtn = wrapper.querySelector('.arrow-next');
+
+					const updateArrowsVisibility = () => {
+						const isAtStart = Math.ceil(track.scrollLeft) <= 0; // 是否在最左端
+						const isAtEnd = Math.ceil(track.scrollLeft + track.clientWidth) >= track
+							.scrollWidth - 1; // 是否在最右端
+
+						// 如果屏幕比较大，按需隐藏/显示左右按钮
+						if (window.innerWidth > 768) {
+							prevBtn.style.display = isAtStart ? 'none' : 'flex';
+							nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+						}
+
+						// 给左右边缘加一层黑色到透明的渐变，让图片显得像是“消失在边缘”
+						if (track.scrollWidth <= track.clientWidth) {
+							track.style.webkitMaskImage = 'none';
+							track.style.maskImage = 'none';
+						} else if (isAtStart) {
+							track.style.webkitMaskImage =
+								'linear-gradient(to right, black 0%, black 90%, transparent 100%)';
+							track.style.maskImage =
+								'linear-gradient(to right, black 0%, black 90%, transparent 100%)';
+						} else if (isAtEnd) {
+							track.style.webkitMaskImage =
+								'linear-gradient(to right, transparent 0%, black 10%, black 100%)';
+							track.style.maskImage =
+								'linear-gradient(to right, transparent 0%, black 10%, black 100%)';
+						} else {
+							track.style.webkitMaskImage =
+								'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)';
+							track.style.maskImage =
+								'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)';
+						}
+					};
+
+					track.addEventListener('scroll', updateArrowsVisibility);
+					updateArrowsVisibility(); // 刚打开时先按当前状态计算一次
+					window.addEventListener('load', updateArrowsVisibility); // ❗核心修复：耐心等待网页上所有图片完全加载完毕后，再精准计算一次
+					window.addEventListener('resize', updateArrowsVisibility);
+				});
+			});
+
+			// === 6. 弹窗看大图的逻辑 ===
+			const lightbox = document.getElementById('lightbox');
+			const lightboxContent = document.getElementById('lightbox-content');
+
+			// 打开弹窗
+			function openLightbox(mediaUrl) {
+				if (window.isDraggingGallery) return; // 如果刚才是在拖动图片，就不执行放大
+
+				// 把你点击的那个图片地址（mediaUrl），填入到这个放大框里面
+				lightboxContent.innerHTML =
+					`<img src="${mediaUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">`;
+				lightboxContent.style.background = 'transparent';
+				lightboxContent.style.boxShadow = 'none';
+
+				lightbox.classList.add('active');
+				document.body.style.overflow = 'hidden'; // 弹出时，禁止网页背景跟着上下滚动
+			}
+
+			// 关闭弹窗
+			function closeLightbox() {
+				lightbox.classList.remove('active');
+				document.body.style.overflow = 'auto'; // 恢复网页的上下滚动
+			}
+
+			// 点击黑色的背景区域，也能关闭弹窗
+			lightbox.addEventListener('click', function(e) {
+				if (e.target === lightbox) {
+					closeLightbox();
+				}
+			});
+		</script>
+	</body>
 </html>
