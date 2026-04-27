@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="image/index/head.ico">
+    <title>网站声明 - 棉花小猫</title>
+    <style>
+        /* ================= 基础设置 ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding-top: 65px;
+            background-color: #f8f9fa;
+        }
+        img { -webkit-user-drag: none; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* ================= 顶部导航栏 (Header) ================= */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 65px;
+            background-color: #fff;
+            box-shadow: 0 4px 12px 2px rgba(0, 0, 0, 0.35);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 50px; z-index: 1000;
+        }
+        .logo { display: flex; align-items: center; height: 100%; }
+        .logo img { height: 60px; width: auto; display: block; object-fit: contain; }
+        .nav-center { display: flex; gap: 40px; align-items: center; }
+        .nav-item {
+            position: relative; font-weight: 500; cursor: pointer; color: #333;
+            transition: color 0.3s ease;
+        }
+        .nav-item.active, .nav-item:hover { color: #ff5722; }
+        .nav-right { display: flex; align-items: center; }
+        
+        /* 下拉菜单 */
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 50%;
+            transform: translateX(-50%); margin-top: 15px; background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); border-radius: 8px;
+            min-width: 120px; overflow: hidden; z-index: 1001;
+        }
+        .dropdown-menu a {
+            display: block; padding: 12px 20px; text-align: center;
+            transition: background 0.2s, color 0.2s; color: #333;
+        }
+        .dropdown-menu a:hover { background-color: #f1f1f1; color: #ff5722; }
+        .has-dropdown.open .dropdown-menu { display: block; }
+        
+        .menu-btn {
+            display: none; cursor: pointer; flex-direction: column; gap: 6px;
+        }
+        .menu-btn span {
+            width: 26px; height: 3px; background-color: #333; border-radius: 2px;
+        }
+
+        /* ================= 媒体页主视觉横幅 (Banner) ================= */
+        .hero-banner {
+            width: 100%; height: 265px; background: #c1e1d7;
+            display: flex; justify-content: center; align-items: center;
+            padding-bottom: 0; overflow: hidden;
+        }
+        .hero-images { display: flex; height: 100%; }
+        .mock-img { display: flex; justify-content: center; align-items: center; }
+        .img-center { width: 500px; height: 100px; align-self: center; }
+        .img-side { width: 220px; height: 250px; align-self: flex-end; }
+        .sidebar { display: none; }
+
+        /* ================= 内容区框架 (延续原版风格) ================= */
+        .gallery-container {
+            width: 85%; max-width: 1200px; margin: 60px auto;
+            display: flex; flex-direction: column; gap: 60px; padding-bottom: 60px;
+        }
+        .series-box {
+            background: #fff; border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); position: relative;
+        }
+        .box-header {
+            height: 80px; border-radius: 30px 30px 0 0; display: flex; align-items: center;
+            position: relative;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 10px, transparent 10px, transparent 20px);
+        }
+        /* 主题颜色 */
+        .theme-yellow .box-header { background-color: #ffd633; }
+        .theme-grey .box-header { background-color: #b0b3b8; }
+        .theme-blue .box-header { background-color: #628cf5; } /* 新增一个蓝色主题用于声明页 */
+
+        .box-title {
+            color: #fff; font-size: 40px; font-weight: 900; margin-left: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .mascot-img {
+            position: absolute; right: 40px; bottom: -19px; height: 140px; width: 180px; z-index: 10;
+        }
+        .mascot-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+        /* ================= 新增：声明文本排版区 ================= */
+        .text-content-wrapper {
+            padding: 40px 50px;
+            color: #444;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        .text-content-wrapper h2 {
+            font-size: 22px;
+            color: #333;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .text-content-wrapper h2:first-child {margin-top: 0;}
+        .text-content-wrapper p {margin-bottom: 15px; text-align: justify;}
+        .text-content-wrapper ul {list-style: disc; margin-left: 20px; margin-bottom: 15px;}
+        .text-content-wrapper li {margin-bottom: 8px;}
+        .text-content-wrapper strong {color: #ff5722;} /* 强调文字使用主题色 */
+
+        /* ================= 响应式设计 ================= */
+        @media (max-width: 1000px) {
+            .header { padding: 0 20px; }
+            .desktop-nav { display: none; }
+            .menu-btn { display: flex; }
+            .sidebar {
+                display: flex; flex-direction: column; gap: 20px; position: fixed;
+                top: 0; right: -280px; width: 280px; height: 100vh; background-color: #fff;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease;
+                padding: 90px 20px 20px; z-index: 999;
+            }
+            .sidebar.active { right: 0; }
+            .sidebar .nav-item { width: 100%; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+            .sidebar .dropdown-menu { position: static; transform: none; box-shadow: none; margin-top: 10px; background-color: #fafafa; }
+            .sidebar .dropdown-menu a { text-align: left; padding-left: 15px; }
+            
+            .hero-images { width: 100%; justify-content: center; }
+            .hero-banner { height: 140px; padding: 0; }
+            .img-side { display: none; }
+            .img-center { width: 70%; height: auto; max-width: 400px; margin: 0 auto; }
+            .img-center img { width: 100%; height: auto; object-fit: contain; }
+            
+            .box-title { font-size: 26px; margin-left: 30px; }
+            .mascot-img { right: 30px; }
+        }
+
+        @media (max-width: 768px) {
+            .logo img { height: 35px; }
+            .gallery-container { width: 95%; gap: 25px; margin-top: 25px; }
+            .box-title { font-size: 24px; margin-left: 20px; }
+            .mascot-img { height: 90px; right: 20px; width: 100px; bottom: -12px; }
+            .box-header { height: 50px; }
+            
+            /* 手机端文本框边距缩小 */
+            .text-content-wrapper {
+                padding: 25px 20px;
+                font-size: 15px;
+            }
+            .text-content-wrapper h2 {
+                font-size: 18px;
+            }
+        }
+
+        /* ================= 网站底部 Footer ================= */
+        .site-footer {
+            background-color: #3b3531; color: #b0b0b0; padding: 50px 20px;
+            font-size: 13px; text-align: center; line-height: 1.8; margin-top: 50px;
+        }
+        .footer-row { margin-bottom: 5px; }
+        .site-footer a { color: #b0b0b0; transition: color 0.3s; }
+        .site-footer a:hover { color: #ffffff; }
+        .footer-links a { color: #d1d1d1; font-weight: bold; }
+        .email-link { color: #d1d1d1 !important; text-decoration: none !important; cursor: pointer; }
+        .email-link:hover {
+            color: #ffffff !important; text-decoration: none !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo"><img src="../image/index/logo.png" alt="Logo"></a>
+        <nav class="nav-center desktop-nav">
+            <a href="../index.html" class="nav-item">主页</a>
+            <a href="#" class="nav-item active">声明</a>
+            <a style="color:#b0b0b0">其他内容制作中</a>
+        </nav>
+        <div class="nav-right desktop-nav">
+            <div class="nav-item has-dropdown"> <span>Language</span>
+                <div class="dropdown-menu">
+                    <a href="#">中文</a>
+                    <a href="../us/statement_us.html">English</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-btn" id="menuToggle"> <span></span><span></span><span></span> </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <a href="../index.html" class="nav-item">主页</a>
+        <a href="#" class="nav-item active">声明</a>
+        <a style="color:#b0b0b0">其他内容制作中</a>
+        <div class="nav-item has-dropdown">
+            <span>Language</span>
+            <div class="dropdown-menu">
+				<a href="#">中文</a>
+				<a href="../us/statement_us.html">English</a>
+			</div>
+        </div>
+    </aside>
+
+    <main>
+        <section class="hero-banner">
+            <div class="hero-images">
+                <div class="mock-img img-side">
+                    <img src="../image/index/hengfu/left.png" alt="侧边图2" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="mock-img img-center">
+                    <img src="../image/index/hengfu/biaoti.png" alt="主视觉图" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="mock-img img-side">
+                    <img src="../image/index/hengfu/right.png" alt="侧边图3" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </section>
+
+        <div class="gallery-container">
+            <div class="series-box theme-blue">
+				<div class="box-header">
+                    <div class="box-title">网站与版权声明</div> 
+                    <div class="mascot-img">
+                        <img src="../image/noind/guajian.png" alt="吉祥物">
+					</div>
+                </div>
+
+                <div class="text-content-wrapper">
+                    <h2>1. 知识产权与版权声明</h2>
+                    <p>本网站（棉花小猫）展示的所有内容，包括但不限于插画、动图（GIF）、表情包设计、网页排版及相关美术资产，除特别标注外，其著作权及相关知识产权均归 <strong>ChangYe</strong>（以下简称“作者”）所有。</p>
+                    <p>本网站为作者本人使用 AI 辅助制作，并在此特别声明：本站的视觉风格及排版设计灵感来源于<a href="https://partyanimals.cn" style="font-weight: bold; color: #ff5722; text-decoration: none;">《猛兽派对》（Party Animals）</a>官方网站。此设计仅作为致敬与个人学习展示之用，不涉及任何商业盈利目的。</p>
+
+                    <h2>2. 二次创作与使用许可</h2>
+                    <p>我们非常欢迎并感谢大家对“棉花小猫”的喜爱与支持！关于作品的使用，请遵守以下原则：</p>
+                    <ul>
+                        <li><strong>非商业使用：</strong>允许将其作为个人微信表情包使用、在非营利性社交媒体上进行分享与传播。</li>
+                        <li><strong>二次创作：</strong>在不歪曲、不恶意篡改原意的前提下，开放非商业性质的同人图文二次创作。</li>
+                        <li><strong>禁止商用：</strong>未经作者书面授权，严禁将本站任何视觉素材用于任何形式的商业用途（包括但不限于周边印制贩售、广告营销、商用游戏素材等）。</li>
+                    </ul>
+
+                    <h2>3. 免责声明</h2>
+                    <p>本网站部分功能或链接可能会跳转至第三方平台（如微信表情开放平台等），第三方平台的内容与隐私政策不受本站控制。用户在使用第三方服务时应自行承担相关风险。</p>
+
+                    <h2>4. 联系我们</h2>
+                    <p>如果您对版权、授权或有任何合作意向，欢迎通过以下邮箱与作者取得联系：<br>
+                    <strong><a href="mailto:cotonkitten01@gmail.com" style="color: #ff5722;">cotonkitten01@gmail.com</a></strong></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-row footer-links">
+            <a>欢迎进行二次创作</a>
+        </div>
+        <div class="footer-row">
+            作者邮箱: <a href="mailto:cotonkitten01@gmail.com" class="email-link">cotonkitten01@gmail.com</a>
+        </div>
+        <div class="footer-row">
+            © 2026 ChangYe
+        </div>
+        <div class="footer-row footer-links">
+            声明：本网页为作者使用AI，仿照“<a href="https://partyanimals.cn/media" style="font-weight: bold; text-decoration: none;">猛兽派对</a>”官网制作
+        </div>
+    </footer>
+
+    <script>
+        // === 1. 手机端侧边导航栏打开/关闭逻辑 ===
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // === 2. 导航栏下拉菜单逻辑 ===
+        const dropdowns = document.querySelectorAll('.has-dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = this.classList.contains('open');
+                dropdowns.forEach(d => d.classList.remove('open')); 
+                if (!isOpen) {
+                    this.classList.add('open');
+                }
+            });
+        });
+        
+        document.addEventListener('click', (e) => {
+            dropdowns.forEach(d => d.classList.remove('open'));
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
