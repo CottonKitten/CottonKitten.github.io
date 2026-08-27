@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../image/index/head.ico">
+    <title>爪爪牌 - 棉花小猫</title>
+    <style>
+        /* ================= 基础设置 ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding-top: 65px;
+            background-color: #f8f9fa;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        img { -webkit-user-drag: none; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* ================= 顶部导航栏 (Header) ================= */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 65px;
+            background-color: #fff;
+            box-shadow: 0 4px 12px 2px rgba(0, 0, 0, 0.35);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 50px; z-index: 1000;
+        }
+        .logo { display: flex; align-items: center; height: 100%; }
+        .logo img { height: 60px; width: auto; display: block; object-fit: contain; }
+        .nav-center { display: flex; gap: 40px; align-items: center; }
+        .nav-item {
+            position: relative; font-weight: 500; cursor: pointer; color: #333;
+            transition: color 0.3s ease;
+        }
+        .nav-item.active, .nav-item:hover { color: #ff5722; }
+        .nav-right { display: flex; align-items: center; }
+
+        /* 下拉菜单 */
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 50%;
+            transform: translateX(-50%); margin-top: 15px; background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); border-radius: 8px;
+            min-width: 120px; overflow: hidden; z-index: 1001;
+        }
+        .dropdown-menu a {
+            display: block; padding: 12px 20px; text-align: center;
+            transition: background 0.2s, color 0.2s; color: #333;
+        }
+        .dropdown-menu a:hover { background-color: #f1f1f1; color: #ff5722; }
+        .has-dropdown.open .dropdown-menu { display: block; }
+
+        .menu-btn {
+            display: none; cursor: pointer; flex-direction: column; gap: 6px;
+        }
+        .menu-btn span {
+            width: 26px; height: 3px; background-color: #333; border-radius: 2px;
+        }
+
+        /* ================= 社交按钮与浮框样式 ================= */
+        .social-btn-container {
+            position: relative; margin-left: 20px; cursor: pointer;
+        }
+        .social-icon {
+            width: 60px; height: 60px; position: relative;
+        }
+        .social-icon img {
+            width: 100%; height: 100%; object-fit: contain; position: absolute;
+            top: 0; left: 0; transition: opacity 0.3s ease;
+        }
+        .social-icon .img-hover { opacity: 0; }
+        .social-btn-container:hover .img-normal { opacity: 0; }
+        .social-btn-container:hover .img-hover { opacity: 1; }
+        .float-box {
+            position: absolute; top: 100%; left: 50%;
+            transform: translateX(-50%); margin-top: 15px;
+            background: #fff; padding: 15px; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); text-align: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .float-box img { width: 120px; height: 120px; display: block; margin-bottom: 10px; }
+        .float-box p { color: #333; font-size: 14px; font-weight: bold; margin: 0; white-space: nowrap; }
+        .social-btn-container:hover .float-box,
+        .social-btn-container.pinned .float-box { opacity: 1; visibility: visible; }
+
+        /* ================= 媒体页主视觉横幅 (Banner) ================= */
+        .hero-banner {
+            width: 100%; height: 265px; background: #c1e1d7;
+            display: flex; justify-content: center; align-items: center;
+            padding-bottom: 0; overflow: hidden;
+        }
+        .hero-images { display: flex; height: 100%; }
+        .mock-img { display: flex; justify-content: center; align-items: center; }
+        .img-center { width: 100%; height: 100%; align-self: center; }
+        .img-center img { object-fit: contain; }
+        .img-side { width: 220px; height: 250px; align-self: flex-end; }
+        .sidebar { display: none; }
+
+        /* ================= 内容区框架 ================= */
+        .gallery-container {
+            width: 85%; max-width: 1200px; margin: 60px auto;
+            display: flex; flex-direction: column; gap: 60px; padding-bottom: 60px;
+        }
+        .series-box {
+            background: #fff; border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); position: relative;
+        }
+        .box-header {
+            height: 80px; border-radius: 30px 30px 0 0; display: flex; align-items: center;
+            position: relative;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 10px, transparent 10px, transparent 20px);
+        }
+        /* 主题颜色 */
+        .theme-yellow .box-header { background-color: #ffd633; }
+        .theme-grey .box-header { background-color: #b0b3b8; }
+        .theme-blue .box-header { background-color: #628cf5; }
+
+        .box-title {
+            color: #fff; font-size: 40px; font-weight: 900; margin-left: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .mascot-img {
+            position: absolute; right: 40px; bottom: -19px; height: 140px; width: 180px; z-index: 10;
+        }
+        .mascot-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+        /* ================= 轮播图集区 ================= */
+        .carousel-wrapper {
+            position: relative; padding: 0px 15px;
+        }
+        .carousel-track {
+            display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth;
+            scrollbar-width: none; -ms-overflow-style: none;
+            padding-top: 25px; padding-bottom: 25px; padding-left: 20px;
+            user-select: none;
+        }
+        .carousel-track::-webkit-scrollbar { display: none; }
+        .carousel-track.dragging { scroll-behavior: auto; cursor: grab; }
+        .carousel-track.dragging:active { cursor: grabbing; }
+
+        .carousel-item {
+            flex: 0 0 auto; width: auto; height: 220px;
+            border-radius: 16px; overflow: hidden; position: relative; cursor: pointer;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .carousel-item img { -webkit-user-drag: none; user-drag: none; }
+        .carousel-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        .carousel-item:last-child { margin-right: 20px; }
+
+        .gif-container { width: auto; height: 100%; position: relative; }
+        .gif-container .static-img {
+            position: relative; height: 100%; width: auto; object-fit: cover;
+            display: block; transition: opacity 0.4s ease;
+        }
+        .gif-container .gif-img {
+            position: absolute; top: 0; left: 0; height: 100%; width: 100%;
+            object-fit: cover; opacity: 0; transition: opacity 0.4s ease;
+        }
+        .carousel-item:hover .gif-container .gif-img { opacity: 1; }
+        .carousel-item:hover .gif-container .static-img { opacity: 0; }
+
+        .arrow {
+            position: absolute; top: 50%; width: 36px; height: 36px;
+            border-radius: 50%; background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); border: none; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 18px; color: #666; z-index: 10; transition: all 0.2s;
+        }
+        .arrow:hover { background-color: #ffd633; color: #fff; }
+        .arrow-prev { left: 0; transform: translate(-50%, -50%); }
+        .arrow-prev:hover { transform: translate(-50%, -50%) scale(1.1); }
+        .arrow-next { right: 0; transform: translate(50%, -50%); }
+        .arrow-next:hover { transform: translate(50%, -50%) scale(1.1); }
+
+        /* ================= 声明文本排版区 ================= */
+        .text-content-wrapper {
+            padding: 40px 50px; color: #444; line-height: 1.8; font-size: 16px;
+        }
+        .text-content-wrapper h2 {
+            font-size: 22px; color: #333; margin-top: 35px; margin-bottom: 15px;
+            border-bottom: 2px solid #eee; padding-bottom: 10px;
+        }
+        .text-content-wrapper h2:first-child { margin-top: 0; }
+        .text-content-wrapper p { margin-bottom: 15px; text-align: justify; }
+        .text-content-wrapper ul { list-style: disc; margin-left: 20px; margin-bottom: 15px; }
+        .text-content-wrapper li { margin-bottom: 8px; }
+        .text-content-wrapper strong { color: #ff5722; }
+
+        /* ================= 下载按钮样式 ================= */
+        .download-section {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            border: 2px solid #ffd633;
+        }
+        .download-section h2 {
+            margin-top: 0 !important;
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+            margin-bottom: 20px !important;
+            color: #e6a800 !important;
+            font-size: 20px !important;
+        }
+        .download-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        .download-btn-primary {
+            background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+        }
+        .download-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+        }
+        .download-btn-secondary {
+            background: #fff;
+            color: #ff5722;
+            border: 2px solid #ff5722;
+        }
+        .download-btn-secondary:hover {
+            background: #fff5f2;
+            transform: translateY(-2px);
+        }
+
+        /* ================= 点击图片放大弹窗 ================= */
+        .lightbox {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .lightbox.active { opacity: 1; pointer-events: auto; }
+        .lightbox-content {
+            width: 80%; max-width: 900px; height: 70%; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            color: #fff; font-size: 24px; background: transparent; box-shadow: none;
+        }
+        .lightbox-close {
+            position: absolute; top: 30px; right: 40px; font-size: 40px;
+            color: #fff; cursor: pointer;
+        }
+
+        /* ================= 响应式设计 ================= */
+        @media (max-width: 1000px) {
+            .header { padding: 0 20px; }
+            .desktop-nav { display: none; }
+            .menu-btn { display: flex; }
+            .sidebar {
+                display: flex; flex-direction: column; gap: 20px; position: fixed;
+                top: 0; right: -280px; width: 280px; height: 100vh; background-color: #fff;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease;
+                padding: 90px 20px 20px; z-index: 999;
+            }
+            .sidebar.active { right: 0; }
+            .sidebar .nav-item { width: 100%; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+            .sidebar .dropdown-menu { position: static; transform: none; box-shadow: none; margin-top: 10px; background-color: #fafafa; }
+            .sidebar .dropdown-menu a { text-align: left; padding-left: 15px; }
+
+            .hero-images { width: 100%; justify-content: center; }
+            .hero-banner { height: 140px; padding: 0; }
+            .img-side { display: none; }
+            .img-center { width: 100%; height: 100%; margin: 0 auto; }
+            .img-center img { width: 100%; height: 100%; object-fit: contain; }
+
+            .box-title { font-size: 26px; margin-left: 30px; }
+            .mascot-img { right: 30px; }
+            .social-icon { width: 40px; height: 40px; }
+            .social-btn-container { margin-left: 15px; }
+            .carousel-item { height: 180px; }
+        }
+
+        @media (max-width: 768px) {
+            .logo img { height: 35px; }
+            .gallery-container { width: 95%; gap: 25px; margin-top: 25px; }
+            .box-title { font-size: 24px; margin-left: 20px; }
+            .mascot-img { height: 90px; right: 20px; width: 100px; bottom: -12px; }
+            .box-header { height: 50px; }
+            .carousel-wrapper { padding: 0px 5px; }
+            .arrow { display: none !important; }
+            .carousel-item { height: 140px; }
+            .social-icon { width: 34px; height: 34px; }
+            .social-btn-container { margin-left: 10px; }
+            .float-box { padding: 10px; margin-top: 10px; }
+            .float-box img { width: 90px; height: 90px; }
+            .float-box p { font-size: 12px; }
+            .text-content-wrapper { padding: 25px 20px; font-size: 15px; }
+            .text-content-wrapper h2 { font-size: 18px; }
+            .download-section { padding: 20px; }
+            .download-btn { padding: 10px 20px; font-size: 14px; }
+        }
+
+        /* ================= 网站底部 Footer ================= */
+        .site-footer {
+            background-color: #3b3531; color: #b0b0b0; padding: 50px 20px;
+            font-size: 13px; text-align: center; line-height: 1.8; margin-top: 50px;
+        }
+        .footer-row { margin-bottom: 5px; }
+        .site-footer a { color: #b0b0b0; transition: color 0.3s; }
+        .site-footer a:hover { color: #ffffff; }
+        .footer-links a { color: #d1d1d1; font-weight: bold; }
+        .email-link { color: #d1d1d1 !important; text-decoration: none !important; cursor: pointer; }
+        .email-link:hover {
+            color: #ffffff !important; text-decoration: none !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../index.html" class="logo"><img src="../image/index/logo.png" alt="Logo"></a>
+        <nav class="nav-center desktop-nav">
+            <a href="../index.html" class="nav-item">主页</a>
+            <a href="statement.html" class="nav-item">声明</a>
+            <a href="#" class="nav-item active">爪爪牌</a> <a style="color:#b0b0b0">更多内容制作中</a>
+        </nav>
+        <div class="nav-right desktop-nav">
+            <div class="nav-item has-dropdown"> <span>Language</span>
+                <div class="dropdown-menu">
+                    <a href="#">中文</a>
+                    <a href="../us/paw_us.html">English</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-btn" id="menuToggle"> <span></span><span></span><span></span> </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <a href="../index.html" class="nav-item">主页</a>
+        <a href="statement.html" class="nav-item">声明</a>
+        <a href="#" class="nav-item active">爪爪牌</a> <a style="color:#b0b0b0">更多内容制作中</a>
+        <div class="nav-item has-dropdown">
+            <span>Language</span>
+            <div class="dropdown-menu">
+                <a href="#">中文</a>
+                <a href="../us/paw_us.html">English</a>
+            </div>
+        </div>
+    </aside>
+
+    <main>
+        <section class="hero-banner">
+            <div class="hero-images">
+                <div class="mock-img img-center">
+                    <img src="../image/index/hengfu/biaoti_PAWS.png" alt="主视觉图" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+            </div>
+        </section>
+
+        <div class="gallery-container">
+
+            <!-- PAWS 卡牌展示区域 -->
+            <div class="series-box theme-yellow">
+                <div class="box-header">
+                    <div class="box-title">爪爪牌</div>
+                    <div class="mascot-img">
+                        <img src="../image/PAWS/guajian.png" alt="吉祥物">
+                    </div>
+                </div>
+
+                <div class="carousel-wrapper">
+                    <button class="arrow arrow-prev" onclick="scrollTrack(this, -1)">❮</button>
+
+                    <div class="carousel-track">
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/0.png')">
+                            <img src="../image/PAWS/0.png" loading="lazy" alt="爪爪牌 0" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/1.jpg')">
+                            <img src="../image/PAWS/1.jpg" loading="lazy" alt="爪爪牌 1" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/2.jpg')">
+                            <img src="../image/PAWS/2.jpg" loading="lazy" alt="爪爪牌 2" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/3.jpg')">
+                            <img src="../image/PAWS/3.jpg" loading="lazy" alt="爪爪牌 3" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/4.jpg')">
+                            <img src="../image/PAWS/4.jpg" loading="lazy" alt="爪爪牌 4" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/5.jpg')">
+                            <img src="../image/PAWS/5.jpg" loading="lazy" alt="爪爪牌 5" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/6.jpg')">
+                            <img src="../image/PAWS/6.jpg" loading="lazy" alt="爪爪牌 6" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/7.jpg')">
+                            <img src="../image/PAWS/7.jpg" loading="lazy" alt="爪爪牌 7" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/8.jpg')">
+                            <img src="../image/PAWS/8.jpg" loading="lazy" alt="爪爪牌 8" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/9.jpg')">
+                            <img src="../image/PAWS/9.jpg" loading="lazy" alt="爪爪牌 9" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/A.jpg')">
+                            <img src="../image/PAWS/A.jpg" loading="lazy" alt="爪爪牌 A" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/B.jpg')">
+                            <img src="../image/PAWS/B.jpg" loading="lazy" alt="爪爪牌 B" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/C.jpg')">
+                            <img src="../image/PAWS/C.jpg" loading="lazy" alt="爪爪牌 C" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/D.jpg')">
+                            <img src="../image/PAWS/D.jpg" loading="lazy" alt="爪爪牌 D" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/E.jpg')">
+                            <img src="../image/PAWS/E.jpg" loading="lazy" alt="爪爪牌 E" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/F.jpg')">
+                            <img src="../image/PAWS/F.jpg" loading="lazy" alt="爪爪牌 F" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/G.jpg')">
+                            <img src="../image/PAWS/G.jpg" loading="lazy" alt="爪爪牌 G" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/H.png')">
+                            <img src="../image/PAWS/H.png" loading="lazy" alt="爪爪牌 H" style="height: 100%; width: auto; display: block;">
+                        </div>
+                    </div>
+                    <button class="arrow arrow-next" onclick="scrollTrack(this, 1)">❯</button>
+                </div>
+            </div>
+
+            <!-- 文字内容区 (与声明页设计相同) -->
+            <div class="series-box theme-blue">
+                <div class="box-header">
+                    <div class="box-title">关于爪爪牌</div>
+                    <div class="mascot-img">
+                        <img src="../image/PAWS/guajian.png" alt="吉祥物">
+                    </div>
+                </div>
+
+                <div class="text-content-wrapper">
+                    <div class="download-section">
+                        <h2>📦 获得“爪爪牌”源文件</h2>
+                        <div class="download-buttons">
+                            <a href="../image/PAWS/PAWS.zip" download class="download-btn download-btn-primary">
+                                <span>⬇</span> 直接下载
+                            </a>
+                            <a href="https://wwbrm.lanzouq.com/if5A144wkl3a" target="_blank" class="download-btn download-btn-secondary">
+                                <span>☁</span> 网盘获取
+                            </a>
+                        </div>
+                    </div>
+
+                    <h2>1. 什么是爪爪牌</h2>
+                    <p>爪爪牌是个人玩家复刻《<a href="https://partyanimals.cn" style="font-weight: bold; color: #ff5722; text-decoration: none;">猛兽派对</a>》（Party Animals）游戏内玩法，制作的同美术风格的事物卡牌设计图。本项目仅用于个人使用及无偿分享，不用于商业用途。</p>
+
+                    <h2>2. 使用与分享</h2>
+                    <p>关于爪爪牌的使用，请遵守以下原则：</p>
+                    <ul>
+                        <li><strong>非商业使用：</strong>爪爪牌仅供个人娱乐与无偿分享，严禁用于任何商业用途。</li>
+                        <li><strong>二次创作：</strong>在不歪曲、不恶意篡改原意的前提下，开放非商业性质的同人图文二次创作。</li>
+                        <li><strong>尊重原作：</strong>爪爪牌的美术风格灵感来源于《猛兽派对》游戏，相关知识产权归原游戏开发商所有。</li>
+                    </ul>
+
+                    <h2>3. 免责声明</h2>
+                    <p>爪爪牌为个人玩家同人创作，与《猛兽派对》官方无任何合作关系。如涉及版权问题，请联系作者及时处理。</p>
+
+                    <h2>4. 联系我们</h2>
+                    <p>如果您对爪爪牌有任何疑问或合作意向，欢迎通过以下邮箱与作者取得联系：<br>
+                    <strong><a href="mailto:cotonkitten01@gmail.com" style="color: #ff5722;">cotonkitten01@gmail.com</a></strong></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-row footer-links">
+            <a>欢迎进行二次创作</a>
+        </div>
+        <div class="footer-row">
+            作者邮箱: <a href="mailto:cotonkitten01@gmail.com" class="email-link">cotonkitten01@gmail.com</a>
+        </div>
+        <div class="footer-row">
+            © 2026 ChangYe
+        </div>
+        <div class="footer-row footer-links">
+            声明：本网页为作者使用AI，仿照“<a href="https://partyanimals.cn/media" style="font-weight: bold; text-decoration: none;">猛兽派对</a>”官网制作
+        </div>
+    </footer>
+
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-close" onclick="closeLightbox()">×</div>
+        <div class="lightbox-content" id="lightbox-content">加载中...</div>
+    </div>
+
+    <script>
+        window.isDraggingGallery = false;
+
+        // === 1. 手机端侧边导航栏打开/关闭逻辑 ===
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // === 2. 导航栏下拉菜单逻辑 ===
+        const dropdowns = document.querySelectorAll('.has-dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = this.classList.contains('open');
+                dropdowns.forEach(d => d.classList.remove('open'));
+                if (!isOpen) {
+                    this.classList.add('open');
+                }
+            });
+        });
+        document.addEventListener('click', (e) => {
+            dropdowns.forEach(d => d.classList.remove('open'));
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // === 3. 左右点击按钮滑动图片的逻辑 ===
+        function scrollTrack(btn, direction) {
+            const track = btn.parentElement.querySelector('.carousel-track');
+            const item = track.querySelector('.carousel-item');
+            const scrollAmount = item.offsetWidth + 20;
+            track.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+        }
+
+        // === 4. 鼠标按住拖拽滑动图片的逻辑 ===
+        const carousels = document.querySelectorAll('.carousel-wrapper');
+        carousels.forEach(wrapper => {
+            const track = wrapper.querySelector('.carousel-track');
+            const prevBtn = wrapper.querySelector('.arrow-prev');
+            const nextBtn = wrapper.querySelector('.arrow-next');
+
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            track.addEventListener('mousedown', (e) => {
+                isDown = true;
+                window.isDraggingGallery = false;
+                track.classList.add('dragging');
+                startX = e.pageX - track.offsetLeft;
+                scrollLeft = track.scrollLeft;
+            });
+            track.addEventListener('mouseleave', () => {
+                isDown = false;
+                track.classList.remove('dragging');
+            });
+            track.addEventListener('mouseup', () => {
+                isDown = false;
+                track.classList.remove('dragging');
+                setTimeout(() => { window.isDraggingGallery = false; }, 50);
+            });
+            track.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - track.offsetLeft;
+                const walk = (x - startX) * 1;
+                if (Math.abs(walk) > 5) {
+                    window.isDraggingGallery = true;
+                }
+                track.scrollLeft = scrollLeft - walk;
+            });
+
+            // === 5. 滑动到两头时，隐藏按钮 & 边缘遮罩渐变 ===
+            const updateArrowsVisibility = () => {
+                const isAtStart = Math.ceil(track.scrollLeft) <= 0;
+                const isAtEnd = Math.ceil(track.scrollLeft + track.clientWidth) >= track.scrollWidth - 1;
+
+                if (window.innerWidth > 768) {
+                    prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                    nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+                }
+
+                if (track.scrollWidth <= track.clientWidth) {
+                    track.style.webkitMaskImage = 'none';
+                    track.style.maskImage = 'none';
+                } else if (isAtStart) {
+                    track.style.webkitMaskImage = 'linear-gradient(to right, black 0%, black 90%, transparent 100%)';
+                    track.style.maskImage = 'linear-gradient(to right, black 0%, black 90%, transparent 100%)';
+                } else if (isAtEnd) {
+                    track.style.webkitMaskImage = 'linear-gradient(to right, transparent 0%, black 10%, black 100%)';
+                    track.style.maskImage = 'linear-gradient(to right, transparent 0%, black 10%, black 100%)';
+                } else {
+                    track.style.webkitMaskImage = 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)';
+                    track.style.maskImage = 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)';
+                }
+            };
+
+            track.addEventListener('scroll', updateArrowsVisibility);
+            updateArrowsVisibility();
+            window.addEventListener('load', updateArrowsVisibility);
+            window.addEventListener('resize', updateArrowsVisibility);
+
+            // 图片加载完成后重新计算箭头可见性（修复懒加载导致初始箭头不显示的问题）
+            const imgs = track.querySelectorAll('img');
+            imgs.forEach(img => {
+                if (img.complete) {
+                    updateArrowsVisibility();
+                } else {
+                    img.addEventListener('load', updateArrowsVisibility);
+                }
+            });
+        });
+
+        // === 6. 弹窗看大图的逻辑 ===
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContent = document.getElementById('lightbox-content');
+
+        function openLightbox(mediaUrl) {
+            if (window.isDraggingGallery) return;
+            lightboxContent.innerHTML = `<img src="${mediaUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">`;
+            lightboxContent.style.background = 'transparent';
+            lightboxContent.style.boxShadow = 'none';
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>
