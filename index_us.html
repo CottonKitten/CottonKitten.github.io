@@ -343,6 +343,43 @@
 			}
 
 			/* 每一个图集（比如“派对影像”、“猛兽抓拍”）的白色背景框 */
+			/* ================= Jump Button ================= */
+			.jump-box {
+				display: block;
+				width: fit-content;
+				align-self: flex-start;
+				background-color: #85bd43;
+				background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0.1) 10px, transparent 10px, transparent 20px);
+				border-radius: 30px;
+				height: 80px;
+				position: relative;
+				margin-bottom: 0;
+				text-decoration: none;
+				transition: transform 0.3s ease;
+			}
+			.jump-box:hover {
+				transform: translateY(-3px);
+			}
+			.jump-box .jump-text {
+				color: #fff;
+				font-size: 40px;
+				font-weight: 900;
+				padding-left: 30px;
+				padding-right: 130px;
+				line-height: 80px;
+				text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				white-space: nowrap;
+			}
+			.jump-box .jump-img {
+				position: absolute;
+				right: -60px;
+				bottom: -19px;
+				height: 140px;
+				width: 180px;
+				z-index: 10;
+				object-fit: contain;
+			}
+
 			.series-box {
 				background: #fff;
 				border-radius: 30px;
@@ -731,6 +768,10 @@
 					right: 30px;
 				}
 
+				.jump-box .jump-text {
+				font-size: 26px;
+			}
+
 				/* ============ 新增：缩小社交图标 ============ */
 				.social-icon {
 					width: 40px;
@@ -753,6 +794,22 @@
 				.logo img {
 					height: 35px;
 				}
+
+				.jump-box {
+				height: 50px;
+			}
+			.jump-box .jump-text {
+				font-size: 24px;
+				padding-left: 20px;
+				padding-right: 75px;
+				line-height: 50px;
+			}
+			.jump-box .jump-img {
+				height: 90px;
+				right: -30px;
+				width: 100px;
+				bottom: -12px;
+			}
 
 				/* Logo变小 */
 
@@ -1007,6 +1064,11 @@
 
 				<!-- 新板块添加到这一行下面 -->
 
+				<!-- Jump to PAWS button -->
+				<a href="us/PAWS_us.html" class="jump-box">
+					<span class="jump-text">Go to</span>
+					<img src="image/PAWS/guajian.png" class="jump-img" alt="PAWS">
+				</a>
 
 				<!-- 这是板块的开始 -->
 				<div class="series-box theme-yellow"> <!-- 这个theme-yellow是板块上面颜色的选择，要其他颜色需要在上面CSS里面添加，再在下面调用 -->
