@@ -205,6 +205,17 @@
             flex-wrap: wrap;
             margin-top: 15px;
         }
+        /* 多组获取按钮横向并排（同一行），小屏自动换行 */
+        .download-row {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+        .download-group {
+            flex: 1;
+            min-width: 260px;
+        }
         .download-btn {
             display: inline-flex;
             align-items: center;
@@ -283,6 +294,35 @@
             .social-icon { width: 40px; height: 40px; }
             .social-btn-container { margin-left: 15px; }
             .carousel-item { height: 180px; }
+        }
+
+                /* ================= 平板视角：下载按钮不换行、随屏宽缩小 ================= */
+        @media (min-width: 769px) and (max-width: 1000px) {
+            /* 两组按钮（爪爪牌 / 吹牛俱乐部）保持同一行，不堆叠 */
+            .download-row {
+                flex-wrap: nowrap;
+                gap: 20px;
+            }
+            .download-group {
+                flex: 1 1 0;   /* 两组均分宽度，允许收缩 */
+                min-width: 0;  /* 允许收缩到内容宽度以下 */
+            }
+            .download-group h2 {
+                white-space: nowrap;                 /* 标题不换行 */
+                font-size: clamp(14px, 1.9vw, 22px); /* 随屏宽缩小 */
+            }
+            /* 每组内的两个按钮保持同一行 */
+            .download-buttons {
+                flex-wrap: nowrap;
+                gap: 10px;
+            }
+            .download-btn {
+                flex: 1 1 0;                              /* 两按钮均分宽度，一起缩小 */
+                min-width: 0;
+                white-space: nowrap;                      /* 按钮内文字不换行 */
+                font-size: clamp(11px, 1.5vw, 15px);      /* 文字随屏宽缩小 */
+                padding: 10px clamp(8px, 1.5vw, 20px);    /* 内边距随屏宽缩小 */
+            }
         }
 
         @media (max-width: 768px) {
@@ -436,10 +476,74 @@
                 </div>
             </div>
 
+            <!-- 吹牛俱乐部卡牌展示区域 -->
+            <div class="series-box theme-yellow">
+                <div class="box-header">
+                    <div class="box-title">吹牛俱乐部</div>
+                    <div class="mascot-img">
+                        <img src="../image/PAWS/LiarCard/BluffaloClub.png" alt="吉祥物">
+                    </div>
+                </div>
+
+                <div class="carousel-wrapper">
+                    <button class="arrow arrow-prev" onclick="scrollTrack(this, -1)">❮</button>
+
+                    <div class="carousel-track">
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Liar.png')">
+                            <img src="../image/PAWS/LiarCard/Liar.png" loading="lazy" alt="LiarCard Liar" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/blue.png')">
+                            <img src="../image/PAWS/LiarCard/blue.png" loading="lazy" alt="LiarCard blue" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/red.png')">
+                            <img src="../image/PAWS/LiarCard/red.png" loading="lazy" alt="LiarCard red" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/yellow.png')">
+                            <img src="../image/PAWS/LiarCard/yellow.png" loading="lazy" alt="LiarCard yellow" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Specia.png')">
+                            <img src="../image/PAWS/LiarCard/Specia.png" loading="lazy" alt="LiarCard Specia" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Boomerang.png')">
+                            <img src="../image/PAWS/LiarCard/Boomerang.png" loading="lazy" alt="LiarCard Boomerang" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/CannedSpinach.png')">
+                            <img src="../image/PAWS/LiarCard/CannedSpinach.png" loading="lazy" alt="LiarCard CannedSpinach" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Inverters.png')">
+                            <img src="../image/PAWS/LiarCard/Inverters.png" loading="lazy" alt="LiarCard Inverters" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/MachineGun.png')">
+                            <img src="../image/PAWS/LiarCard/MachineGun.png" loading="lazy" alt="LiarCard MachineGun" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/MagnifyingGlass.png')">
+                            <img src="../image/PAWS/LiarCard/MagnifyingGlass.png" loading="lazy" alt="LiarCard MagnifyingGlass" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Soda.png')">
+                            <img src="../image/PAWS/LiarCard/Soda.png" loading="lazy" alt="LiarCard Soda" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/StealthPotion.png')">
+                            <img src="../image/PAWS/LiarCard/StealthPotion.png" loading="lazy" alt="LiarCard StealthPotion" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/SurveillanceCameras.png')">
+                            <img src="../image/PAWS/LiarCard/SurveillanceCameras.png" loading="lazy" alt="LiarCard SurveillanceCameras" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/BACK.png')">
+                            <img src="../image/PAWS/LiarCard/BACK.png" loading="lazy" alt="LiarCard 卡背" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/NemoCard/H.png')">
+                            <img src="../image/PAWS/NemoCard/H.png" loading="lazy" alt="爪爪牌 H" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        
+                    </div>
+                    <button class="arrow arrow-next" onclick="scrollTrack(this, 1)">❯</button>
+                </div>
+            </div>
+
             <!-- 文字内容区 (与声明页设计相同) -->
             <div class="series-box theme-blue">
                 <div class="box-header">
-                    <div class="box-title">关于爪爪牌</div>
+                    <div class="box-title">关于卡牌</div>
                     <div class="mascot-img">
                         <img src="../image/PAWS/NemoCard/guajian.png" alt="吉祥物">
                     </div>
@@ -447,33 +551,48 @@
 
                 <div class="text-content-wrapper">
                     <div class="download-section">
-                        <h2>📦 获得“爪爪牌”源文件</h2>
-                        <div class="download-buttons">
-                            <a href="../image/PAWS/NemoCard/PAWS.zip" download class="download-btn download-btn-primary">
-                                <span>⬇</span> 直接下载
-                            </a>
-                            <a href="https://wwbrm.lanzouq.com/if5A144wkl3a" target="_blank" class="download-btn download-btn-secondary">
-                                <span>☁</span> 网盘获取
-                            </a>
+                        <div class="download-row">
+                            <div class="download-group">
+                                <h2>📦 获得“爪爪牌”源文件</h2>
+                                <div class="download-buttons">
+                                    <a href="../image/PAWS/NemoCard/PAWS.zip" download class="download-btn download-btn-primary">
+                                        <span>⬇</span> 直接下载
+                                    </a>
+                                    <a href="https://wwbrm.lanzouq.com/if5A144wkl3a" target="_blank" class="download-btn download-btn-secondary">
+                                        <span>☁</span> 网盘获取
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="download-group">
+                                <h2>📦 获得“吹牛俱乐部”源文件</h2>
+                                <div class="download-buttons">
+                                    <a href="../image/PAWS/LiarCard/LiarCard.zip" download class="download-btn download-btn-primary">
+                                        <span>⬇</span> 直接下载
+                                    </a>
+                                    <a href="#" target="_blank" class="download-btn download-btn-secondary">
+                                        <span>☁</span> 网盘获取
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <h2>1. 什么是爪爪牌</h2>
-                    <p>爪爪牌是个人玩家复刻《<a href="https://partyanimals.cn" style="font-weight: bold; color: #ff5722; text-decoration: none;">猛兽派对</a>》（Party Animals）游戏内玩法，制作的同美术风格的事物卡牌设计图。本项目仅用于个人使用及无偿分享，不用于商业用途。</p>
+                  
+                    <p>该网页所提供的卡牌是由个人玩家复刻《<a href="https://partyanimals.cn" style="font-weight: bold; color: #ff5722; text-decoration: none;">猛兽派对</a>》（Party Animals）游戏内玩法，制作的同美术风格的事物卡牌设计图。本项目仅用于个人使用及无偿分享，不用于商业用途。</p>
 
                     <h2>2. 使用与分享</h2>
-                    <p>关于爪爪牌的使用，请遵守以下原则：</p>
+                    <p>关于卡牌文件的使用，请遵守以下原则：</p>
                     <ul>
-                        <li><strong>非商业使用：</strong>爪爪牌仅供个人娱乐与无偿分享，严禁用于任何商业用途。</li>
+                        <li><strong>非商业使用：</strong>“卡牌”设计仅供个人娱乐与无偿分享，严禁用于任何商业用途。</li>
                         <li><strong>二次创作：</strong>在不歪曲、不恶意篡改原意的前提下，开放非商业性质的同人图文二次创作。</li>
-                        <li><strong>尊重原作：</strong>爪爪牌的美术风格灵感来源于《猛兽派对》游戏，相关知识产权归原游戏开发商所有。</li>
+                        <li><strong>尊重原作：</strong>“卡牌”的美术风格灵感来源于《猛兽派对》游戏，相关知识产权归原游戏开发商所有。</li>
                     </ul>
 
                     <h2>3. 免责声明</h2>
-                    <p>爪爪牌为个人玩家同人创作，与《猛兽派对》官方无任何合作关系。如涉及版权问题，请联系作者及时处理。</p>
+                    <p>该网页说提供的卡牌为个人玩家同人创作，与《猛兽派对》官方无任何合作关系。如涉及版权问题，请联系作者及时处理。</p>
 
                     <h2>4. 联系我们</h2>
-                    <p>如果您对爪爪牌有任何疑问或合作意向，欢迎通过以下邮箱与作者取得联系：<br>
+                    <p>如果您对该卡牌有任何疑问或合作意向，欢迎通过以下邮箱与作者取得联系：<br>
                     <strong><a href="mailto:cotonkitten01@gmail.com" style="color: #ff5722;">cotonkitten01@gmail.com</a></strong></p>
                 </div>
             </div>

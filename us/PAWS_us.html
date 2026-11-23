@@ -199,11 +199,22 @@
         .download-section h2 {
             /* inherits .text-content-wrapper h2 styles */
         }
-        .download-buttons {
+                .download-buttons {
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
             margin-top: 15px;
+        }
+        /* Multiple download groups side by side (same row), wrap on small screens */
+        .download-row {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+        .download-group {
+            flex: 1;
+            min-width: 260px;
         }
         .download-btn {
             display: inline-flex;
@@ -282,7 +293,34 @@
             .mascot-img { right: 30px; }
             .social-icon { width: 40px; height: 40px; }
             .social-btn-container { margin-left: 15px; }
-            .carousel-item { height: 180px; }
+                        .carousel-item { height: 180px; }
+        }
+
+        /* ================= Tablet: buttons no wrap, scale with width ================= */
+        @media (min-width: 769px) and (max-width: 1000px) {
+            .download-row {
+                flex-wrap: nowrap;
+                gap: 20px;
+            }
+            .download-group {
+                flex: 1 1 0;
+                min-width: 0;
+            }
+            .download-group h2 {
+                white-space: nowrap;
+                font-size: clamp(14px, 1.9vw, 22px);
+            }
+            .download-buttons {
+                flex-wrap: nowrap;
+                gap: 10px;
+            }
+            .download-btn {
+                flex: 1 1 0;
+                min-width: 0;
+                white-space: nowrap;
+                font-size: clamp(11px, 1.5vw, 15px);
+                padding: 10px clamp(8px, 1.5vw, 20px);
+            }
         }
 
         @media (max-width: 768px) {
@@ -301,8 +339,33 @@
             .float-box p { font-size: 12px; }
             .text-content-wrapper { padding: 25px 20px; font-size: 15px; }
             .text-content-wrapper h2 { font-size: 18px; }
-            .download-section { padding: 20px; }
-            .download-btn { padding: 10px 20px; font-size: 14px; }
+            .download-section { padding: 15px 10px; }
+            /* 手机端：'Get' 标题字号不变且不换行，放不下时整组换到下一段；仅下载按钮缩放 */
+            .download-row {
+                flex-wrap: wrap;      /* 允许整组换段 */
+                gap: 20px;
+            }
+            .download-group {
+                flex: 1 1 0;
+                /* 默认 min-width:auto，组不会被压到比标题窄，防止标题溢出 */
+            }
+            .download-group h2 {
+                font-size: 18px;       /* 标题字号保持不变 */
+                white-space: nowrap;   /* 标题内部不换行 */
+                margin-bottom: 8px;
+            }
+            .download-buttons {
+                flex-wrap: nowrap;     /* 组内两个按钮同一行 */
+                gap: 8px;
+            }
+            .download-btn {
+                flex: 1 1 0;
+                min-width: 0;
+                white-space: nowrap;
+                font-size: clamp(9px, 2.8vw, 14px);
+                padding: 9px clamp(5px, 1.5vw, 14px);
+                gap: 5px;
+            }
         }
 
         /* ================= Footer ================= */
@@ -432,6 +495,69 @@
                             <img src="../image/PAWS/NemoCard/H.png" loading="lazy" alt="PAWS H" style="height: 100%; width: auto; display: block;">
                         </div>
                     </div>
+                                        <button class="arrow arrow-next" onclick="scrollTrack(this, 1)">❯</button>
+                </div>
+            </div>
+
+            <!-- Bluffalo Club Cards Display Area -->
+            <div class="series-box theme-yellow">
+                <div class="box-header">
+                    <div class="box-title">Bluffalo Club</div>
+                    <div class="mascot-img">
+                        <img src="../image/PAWS/LiarCard/BluffaloClub.png" alt="Mascot">
+                    </div>
+                </div>
+
+                <div class="carousel-wrapper">
+                    <button class="arrow arrow-prev" onclick="scrollTrack(this, -1)">❮</button>
+
+                    <div class="carousel-track">
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Liar.png')">
+                            <img src="../image/PAWS/LiarCard/Liar.png" loading="lazy" alt="LiarCard Liar" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/blue.png')">
+                            <img src="../image/PAWS/LiarCard/blue.png" loading="lazy" alt="LiarCard blue" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/red.png')">
+                            <img src="../image/PAWS/LiarCard/red.png" loading="lazy" alt="LiarCard red" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/yellow.png')">
+                            <img src="../image/PAWS/LiarCard/yellow.png" loading="lazy" alt="LiarCard yellow" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Specia.png')">
+                            <img src="../image/PAWS/LiarCard/Specia.png" loading="lazy" alt="LiarCard Specia" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Boomerang.png')">
+                            <img src="../image/PAWS/LiarCard/Boomerang.png" loading="lazy" alt="LiarCard Boomerang" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/CannedSpinach.png')">
+                            <img src="../image/PAWS/LiarCard/CannedSpinach.png" loading="lazy" alt="LiarCard CannedSpinach" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Inverters.png')">
+                            <img src="../image/PAWS/LiarCard/Inverters.png" loading="lazy" alt="LiarCard Inverters" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/MachineGun.png')">
+                            <img src="../image/PAWS/LiarCard/MachineGun.png" loading="lazy" alt="LiarCard MachineGun" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/MagnifyingGlass.png')">
+                            <img src="../image/PAWS/LiarCard/MagnifyingGlass.png" loading="lazy" alt="LiarCard MagnifyingGlass" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/Soda.png')">
+                            <img src="../image/PAWS/LiarCard/Soda.png" loading="lazy" alt="LiarCard Soda" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/StealthPotion.png')">
+                            <img src="../image/PAWS/LiarCard/StealthPotion.png" loading="lazy" alt="LiarCard StealthPotion" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/SurveillanceCameras.png')">
+                            <img src="../image/PAWS/LiarCard/SurveillanceCameras.png" loading="lazy" alt="LiarCard SurveillanceCameras" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/LiarCard/BACK.png')">
+                            <img src="../image/PAWS/LiarCard/BACK.png" loading="lazy" alt="LiarCard Back" style="height: 100%; width: auto; display: block;">
+                        </div>
+                        <div class="carousel-item" onclick="openLightbox('../image/PAWS/NemoCard/H.png')">
+                            <img src="../image/PAWS/NemoCard/H.png" loading="lazy" alt="PAWS H" style="height: 100%; width: auto; display: block;">
+                        </div>
+                    </div>
                     <button class="arrow arrow-next" onclick="scrollTrack(this, 1)">❯</button>
                 </div>
             </div>
@@ -439,41 +565,55 @@
             <!-- Text Content Area (same design as Statement page) -->
             <div class="series-box theme-blue">
                 <div class="box-header">
-                    <div class="box-title">About PAWS</div>
+                    <div class="box-title">About Cards</div>
                     <div class="mascot-img">
                         <img src="../image/PAWS/NemoCard/guajian.png" alt="Mascot">
                     </div>
                 </div>
 
-                <div class="text-content-wrapper">
+                                <div class="text-content-wrapper">
                     <div class="download-section">
-                        <h2>📦 Get PAWS Source Files</h2>
-                        <div class="download-buttons">
-                            <a href="../image/PAWS/NemoCard/PAWS.zip" download class="download-btn download-btn-primary">
-                                <span>⬇</span> Download
-                            </a>
-                            <a href="https://drive.google.com/file/d/1cwbMWdfd1mZ5ZJDijDPpleKJOX1fTq1X/view?usp=sharing" target="_blank" class="download-btn download-btn-secondary">
-                                <span>☁</span> Google Drive
-                            </a>
+                        <div class="download-row">
+                            <div class="download-group">
+                                <h2>📦 Get "PAWS" Files</h2>
+                                <div class="download-buttons">
+                                    <a href="../image/PAWS/NemoCard/PAWS.zip" download class="download-btn download-btn-primary">
+                                        <span>⬇</span> Download
+                                    </a>
+                                    <a href="https://drive.google.com/file/d/1cwbMWdfd1mZ5ZJDijDPpleKJOX1fTq1X/view?usp=sharing" target="_blank" class="download-btn download-btn-secondary">
+                                        <span>☁</span> Google Drive
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="download-group">
+                                <h2>📦 Get "BluffaloClub" Files</h2>
+                                <div class="download-buttons">
+                                    <a href="../image/PAWS/LiarCard/LiarCard.zip" download class="download-btn download-btn-primary">
+                                        <span>⬇</span> Download
+                                    </a>
+                                    <a href="#" target="_blank" class="download-btn download-btn-secondary">
+                                        <span>☁</span> Google Drive
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <h2>1. What are PAWS</h2>
-                    <p>PAWS are card designs created by an individual player, replicating the gameplay of <a href="https://partyanimals.com" style="font-weight: bold; color: #ff5722; text-decoration: none;">Party Animals</a> with the same art style. This project is for personal use and free sharing only, not for commercial purposes.</p>
+                    <p>The cards provided on this page are card designs created by an individual player, replicating the gameplay of <a href="https://partyanimals.com" style="font-weight: bold; color: #ff5722; text-decoration: none;">Party Animals</a> with the same art style. This project is for personal use and free sharing only, not for commercial purposes.</p>
 
                     <h2>2. Usage & Sharing</h2>
-                    <p>Regarding the use of PAWS, please follow these guidelines:</p>
+                    <p>Regarding the use of the card files, please follow these guidelines:</p>
                     <ul>
-                        <li><strong>Non-Commercial Use:</strong> PAWS are for personal entertainment and free sharing only. Commercial use is strictly prohibited.</li>
+                        <li><strong>Non-Commercial Use:</strong> The "Card" designs are for personal entertainment and free sharing only. Commercial use is strictly prohibited.</li>
                         <li><strong>Secondary Creation:</strong> Non-commercial fan art and derivative works are welcome, provided they do not distort the original intent.</li>
-                        <li><strong>Respect the Original:</strong> The art style of PAWS is inspired by the game Party Animals. Relevant intellectual property rights belong to the original game developer.</li>
+                        <li><strong>Respect the Original:</strong> The art style of the "Cards" is inspired by the game Party Animals. Relevant intellectual property rights belong to the original game developer.</li>
                     </ul>
 
                     <h2>3. Disclaimer</h2>
-                    <p>PAWS are a personal fan creation and have no affiliation with the official Party Animals team. If there are any copyright concerns, please contact the author for prompt resolution.</p>
+                    <p>The cards provided on this page are personal fan creations and have no affiliation with the official Party Animals team. If there are any copyright concerns, please contact the author for prompt resolution.</p>
 
                     <h2>4. Contact Us</h2>
-                    <p>For any questions or collaboration inquiries regarding PAWS, please contact the Author at:<br>
+                    <p>If you have any questions or collaboration inquiries regarding these cards, please contact the author at:<br>
                     <strong><a href="mailto:cotonkitten01@gmail.com" style="color: #ff5722;">cotonkitten01@gmail.com</a></strong></p>
                 </div>
             </div>
